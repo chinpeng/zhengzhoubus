@@ -34,8 +34,8 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import com.loveplusplus.zhengzhou.R;
-import com.loveplusplus.zhengzhou.service.BusDatabase;
+
+import com.loveplusplus.zhengzhou.service.BusDatabase.BusColumns;
 import com.loveplusplus.zhengzhou.service.BusProvider;
 
 /**
@@ -52,7 +52,7 @@ public class SearchableBusLineActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.search);
+		setContentView(R.layout.activity_search);
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		
@@ -106,17 +106,17 @@ public class SearchableBusLineActivity extends Activity {
 			mTextView.setText(countString);
 
 			// Specify the columns we want to display in the result
-			String[] from = new String[] { BusDatabase.BusColumns.NAME,
-					BusDatabase.BusColumns.DEFINITION };
+			String[] from = new String[] { BusColumns.NAME,
+					BusColumns.DEFINITION };
 
 			// Specify the corresponding layout elements where we want the
 			// columns to go
-			int[] to = new int[] { R.id.word, R.id.definition };
+			int[] to = new int[] { R.id.bus_name, R.id.bus_definition };
 
 			// Create a simple cursor adapter for the definitions and apply them
 			// to the ListView
 			SimpleCursorAdapter words = new SimpleCursorAdapter(this,
-					R.layout.search_suggest, cursor, from, to);
+					R.layout.bus_search_suggest, cursor, from, to);
 			mListView.setAdapter(words);
 
 			// Define the on-click listener for the list items
@@ -130,7 +130,7 @@ public class SearchableBusLineActivity extends Activity {
 					Intent wordIntent = new Intent(getApplicationContext(),
 							BusLineActivity.class);
 					Uri data = Uri.withAppendedPath(
-							BusProvider.QUERY_CONTENT_URI, String.valueOf(id));
+							BusProvider.GET_BUS_URI, String.valueOf(id));
 					wordIntent.setData(data);
 					startActivity(wordIntent);
 				}

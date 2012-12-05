@@ -19,8 +19,9 @@ package com.loveplusplus.zhengzhou.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 
-import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.SearchManager;
 import android.content.ContentValues;
@@ -33,6 +34,11 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.loveplusplus.zhengzhou.bean.Bus;
+import com.loveplusplus.zhengzhou.bean.LineTemp;
+import com.loveplusplus.zhengzhou.bean.Station;
+import com.loveplusplus.zhengzhou.util.XmlUtil;
+
 /**
  * Contains logic to return specific words from the dictionary, and load the
  * dictionary table when it needs to be created.
@@ -43,10 +49,9 @@ public class BusDatabase extends SQLiteOpenHelper {
 	//String sql = "SELECT l.direct,l.sno,s.id,s.name FROM line l ,station s where l.bus_id=? and l.station_id=s.id order by l.sno ";
 	private static final String TAG = "BusDatabase";
 	private static final String DATABASE_NAME = "bus";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 4;
 
 	private Context context;
-	private static final HashMap<String, String> mColumnMap = buildColumnMap();
 
 	public interface Tables {
 		String BUS = "bus";
@@ -94,24 +99,7 @@ public class BusDatabase extends SQLiteOpenHelper {
 		this.context=context;
 	}
 
-	/**
-	 * Builds a map for all columns that may be requested, which will be given
-	 * to the SQLiteQueryBuilder. This is a good way to define aliases for
-	 * column names, but must include all columns, even if the value is the key.
-	 * This allows the ContentProvider to request columns w/o the need to know
-	 * real column names and create the alias itself.
-	 */
-	private static HashMap<String, String> buildColumnMap() {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put(BusColumns.NAME, BusColumns.NAME);
-		map.put(BusColumns.DEFINITION, BusColumns.DEFINITION);
-		map.put(BaseColumns._ID, "rowid AS " + BaseColumns._ID);
-		map.put(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID, "rowid AS "
-				+ SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
-		map.put(SearchManager.SUGGEST_COLUMN_SHORTCUT_ID, "rowid AS "
-				+ SearchManager.SUGGEST_COLUMN_SHORTCUT_ID);
-		return map;
-	}
+	
 
 	/**
 	 * Returns a Cursor positioned at the word specified by rowId
@@ -133,6 +121,34 @@ public class BusDatabase extends SQLiteOpenHelper {
 		 * WHERE rowid = <rowId>
 		 */
 	}
+	public Cursor getLine(String busId, String[] columns) {
+		String selection = "line.bus_id = ?";
+		String[] selectionArgs = new String[] { busId };
+		
+		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+		builder.setTables(Tables.LINE+" inner join "+Tables.STATION+" on(line._id=station._id) ");
+		
+		HashMap<String, String> map = new HashMap<String, String>();
+		
+		map.put(LineColumns.DIRECT, LineColumns.DIRECT);
+		map.put(LineColumns.SNO, LineColumns.SNO);
+		map.put(StationColumns._ID, "station._id AS "+StationColumns._ID);
+		map.put(StationColumns.NAME, "station.name AS "+StationColumns.NAME);
+		builder.setProjectionMap(map);
+
+		Cursor cursor = builder.query(getReadableDatabase(), columns, selection,
+				selectionArgs, null, null, null);
+
+		if (cursor == null) {
+			return null;
+		} else if (!cursor.moveToFirst()) {
+			cursor.close();
+			return null;
+		}
+		Log.d(TAG, ""+cursor.getCount());
+		Log.d(TAG, cursor.getString(1));
+		return cursor;
+	}
 
 	/**
 	 * Returns a Cursor over all words that match the given query
@@ -144,8 +160,8 @@ public class BusDatabase extends SQLiteOpenHelper {
 	 * @return Cursor over all words that match, or null if none found.
 	 */
 	public Cursor getWordMatches(String query, String[] columns) {
-		String selection = BusColumns.NAME + " MATCH ?";
-		String[] selectionArgs = new String[] { query + "*" };
+		String selection = BusColumns.NAME + " like ?";
+		String[] selectionArgs = new String[] { query + "%" };
 
 		return query(selection, selectionArgs, columns);
 
@@ -165,29 +181,23 @@ public class BusDatabase extends SQLiteOpenHelper {
 		 * the entire table, but sorting the relevance could be difficult.
 		 */
 	}
-
-	/**
-	 * Performs a database query.
-	 * 
-	 * @param selection
-	 *            The selection clause
-	 * @param selectionArgs
-	 *            Selection arguments for "?" components in the selection
-	 * @param columns
-	 *            The columns to return
-	 * @return A Cursor over all rows matching the query
-	 */
-	private Cursor query(String selection, String[] selectionArgs,
-			String[] columns) {
-		/*
-		 * The SQLiteBuilder provides a map for all possible columns requested
-		 * to actual columns in the database, creating a simple column alias
-		 * mechanism by which the ContentProvider does not need to know the real
-		 * column names
-		 */
+	public Cursor getBusMatches(String query, String[] columns) {
+		String selection = BusColumns.NAME + " like ?";
+		String[] selectionArgs = new String[] { query + "%" };
+		
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(Tables.BUS);
-		builder.setProjectionMap(mColumnMap);
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put(BusColumns.NAME, BusColumns.NAME);
+		map.put(BusColumns.DEFINITION, BusColumns.DEFINITION);
+		map.put(BusColumns.START_TIME, BusColumns.START_TIME);
+		map.put(BusColumns.END_TIME, BusColumns.END_TIME);
+		map.put(BusColumns.PRICE, BusColumns.PRICE);
+		
+		map.put(BusColumns._ID, BusColumns._ID);
+		map.put(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID, "_id AS "+ SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
+		
+		builder.setProjectionMap(map);
 
 		Cursor cursor = builder.query(getReadableDatabase(), columns, selection,
 				selectionArgs, null, null, null);
@@ -198,6 +208,62 @@ public class BusDatabase extends SQLiteOpenHelper {
 			cursor.close();
 			return null;
 		}
+		Log.d(TAG, "----->"+cursor.getCount());
+		return cursor;
+		
+	}
+	public Cursor getBusByName(String query, String[] columns) {
+		String selection = BusColumns.NAME + " like ?";
+		String[] selectionArgs = new String[] { query + "%" };
+		
+		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+		builder.setTables(Tables.BUS);
+		
+		HashMap<String, String> map = new HashMap<String, String>();
+		
+		map.put(BusColumns.NAME, BusColumns.NAME);
+		map.put(BusColumns.DEFINITION, BusColumns.DEFINITION);
+		map.put(BusColumns._ID,  BusColumns._ID);
+		
+		builder.setProjectionMap(map);
+
+		Cursor cursor = builder.query(getReadableDatabase(), columns, selection,
+				selectionArgs, null, null, null);
+
+		if (cursor == null) {
+			return null;
+		} else if (!cursor.moveToFirst()) {
+			cursor.close();
+			return null;
+		}
+		return cursor;
+		
+	}
+
+
+	private Cursor query(String selection, String[] selectionArgs,
+			String[] columns) {
+		
+		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+		builder.setTables(Tables.BUS);
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put(BusColumns.NAME, BusColumns.NAME);
+		map.put(BusColumns.DEFINITION, BusColumns.DEFINITION);
+		map.put(BusColumns._ID, BusColumns._ID);
+		map.put(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID, "_id AS "+ SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
+		
+		builder.setProjectionMap(map);
+
+		Cursor cursor = builder.query(getReadableDatabase(), columns, selection,
+				selectionArgs, null, null, null);
+
+		if (cursor == null) {
+			return null;
+		} else if (!cursor.moveToFirst()) {
+			cursor.close();
+			return null;
+		}
+		Log.d(TAG, "----->"+cursor.getCount());
 		return cursor;
 	}
 
@@ -228,6 +294,7 @@ public class BusDatabase extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		Log.d(TAG, "创建数据库 bus");
 		db.execSQL("CREATE TABLE "+Tables.BUS+"("
 				+BusColumns._ID+"  INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+BusColumns.NAME+"  TEXT NOT NULL,"
@@ -237,11 +304,11 @@ public class BusDatabase extends SQLiteOpenHelper {
 				+BusColumns.CARD+"  TEXT,"
 				+BusColumns.DEFINITION+"  TEXT,"
 				+BusColumns.COMPANY+"  TEXT)");
-		
+		Log.d(TAG, "创建数据库 station");
 		db.execSQL("CREATE TABLE "+Tables.STATION+" ("
 				+ StationColumns._ID+  " INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+StationColumns.NAME+ " TEXT NOT NULL )");
-		
+		Log.d(TAG, "创建数据库 line");
 		db.execSQL("CREATE TABLE "+Tables.LINE+"("
 				+LineColumns._ID  +" INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+LineColumns.BUS_ID+"  INTEGER,"
@@ -252,6 +319,7 @@ public class BusDatabase extends SQLiteOpenHelper {
 				+"FOREIGN KEY ("+LineColumns.STATION_ID+") REFERENCES "+Tables.STATION+" ("+StationColumns._ID+"),"
 				+"UNIQUE ("+LineColumns.BUS_ID+" , "+LineColumns.STATION_ID+" , "+LineColumns.DIRECT+" , "+LineColumns.SNO+" ) ON CONFLICT REPLACE)");
 
+		Log.d(TAG, "创建数据库 favorite");
 		db.execSQL("CREATE  TABLE " + Tables.FAVORITE + "(" 
 				+ FavoriteColumns._ID+ " INTEGER PRIMARY KEY AUTOINCREMENT," 
 				+ FavoriteColumns.STATION_NAME+ " TEXT,"
@@ -259,21 +327,84 @@ public class BusDatabase extends SQLiteOpenHelper {
 				+ FavoriteColumns.DIRECT + " INTEGER," 
 				+ FavoriteColumns.BUS_NAME + " TEXT)");
 		
-		loadBusData();
+		loadBusData(db);
 
 	}
 
-	private void loadBusData() {
-//		try {
-//			AssetManager assetManager = context.getResources().getAssets();
-//			
-//			//InputStream is1 = assetManager.open("/db/bus.xml");
-//			//InputStream is2 = assetManager.open("/db/station.xml");
-//			//InputStream is3 = assetManager.open("/db/line.xml");
-//			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+	private void loadBusData(SQLiteDatabase db) {
+		try {
+			Log.d(TAG, "加载数据");
+			AssetManager assetManager = context.getResources().getAssets();
+			
+			InputStream is1 = assetManager.open("db/bus.xml");
+			List<Bus> buses=XmlUtil.loadBus(is1);
+			saveBus(db,buses);
+			
+			InputStream is2 = assetManager.open("db/station.xml");
+			List<Station> stations=XmlUtil.loadStation(is2);
+			saveStation(db,stations);
+			
+			InputStream is3 = assetManager.open("db/line.xml");
+			List<LineTemp> lines=XmlUtil.loadLine(is3);
+			saveLine(db,lines);
+			Log.d(TAG, "加载数据");
+		} catch (IOException e) {
+			Log.e(TAG, " 加载数据异常"+e.getMessage());
+		} catch (NumberFormatException e) {
+			Log.e(TAG, " 加载数据异常"+e.getMessage());
+		} catch (XmlPullParserException e) {
+			Log.e(TAG, "读取xml数据异常"+e.getMessage());
+		}
+	}
+
+	private void saveLine(SQLiteDatabase db, List<LineTemp> lines) {
+		Log.d(TAG, " 开始加载line:"+lines.size());
+		db.beginTransaction();        //手动设置开始事务
+		//数据插入操作循环
+		for(LineTemp l:lines){
+			ContentValues values=new ContentValues();
+			values.put(LineColumns._ID, l.getId());
+			values.put(LineColumns.BUS_ID, l.getBusId());
+			values.put(LineColumns.DIRECT, l.getDirect());
+			values.put(LineColumns.SNO, l.getSno());
+			values.put(LineColumns.STATION_ID, l.getStationId());
+			db.insert(Tables.LINE, null, values);
+		}
+		db.setTransactionSuccessful();        //设置事务处理成功，不设置会自动回滚不提交
+		db.endTransaction();        //处理完成
+	}
+
+	private void saveStation(SQLiteDatabase db, List<Station> stations) {
+		Log.d(TAG, " 开始加载station:"+stations.size());
+		db.beginTransaction();        //手动设置开始事务
+		//数据插入操作循环
+		for(Station l:stations){
+			ContentValues values=new ContentValues();
+			values.put(StationColumns._ID, l.getId());
+			values.put(StationColumns.NAME, l.getName());
+			db.insert(Tables.STATION, null, values);
+		}
+		db.setTransactionSuccessful();        //设置事务处理成功，不设置会自动回滚不提交
+		db.endTransaction();        //处理完成
+	}
+
+	private void saveBus(SQLiteDatabase db, List<Bus> buses) {
+		Log.d(TAG, " 开始加载bus:"+buses.size());
+		db.beginTransaction();        //手动设置开始事务
+		//数据插入操作循环
+		for(Bus l:buses){
+			ContentValues values=new ContentValues();
+			values.put(BusColumns._ID, l.getId());
+			values.put(BusColumns.CARD, l.getCard());
+			values.put(BusColumns.COMPANY, l.getCompany());
+			values.put(BusColumns.END_TIME, l.getEndTime());
+			values.put(BusColumns.NAME, l.getName());
+			values.put(BusColumns.PRICE, l.getPrice());
+			values.put(BusColumns.START_TIME, l.getStartTime());
+			db.insert(Tables.BUS, null, values);
+		}
+		db.setTransactionSuccessful();        //设置事务处理成功，不设置会自动回滚不提交
+		db.endTransaction();        //处理完成
 	}
 
 	@Override

@@ -18,9 +18,12 @@ package com.loveplusplus.zhengzhou;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,11 +39,16 @@ import android.widget.SearchView;
 
 import com.loveplusplus.zhengzhou.bean.Line;
 import com.loveplusplus.zhengzhou.service.BusDatabase;
+import com.loveplusplus.zhengzhou.service.BusDatabase.BusColumns;
+import com.loveplusplus.zhengzhou.service.BusDatabase.LineColumns;
+import com.loveplusplus.zhengzhou.service.BusDatabase.StationColumns;
+import com.loveplusplus.zhengzhou.service.BusProvider;
 
 /**
  * Displays a word and its definition.
  */
-public class BusLineActivity extends FragmentActivity {
+public class BusLineActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+	private static final String[] PROJECTION = new String[]{LineColumns.DIRECT,LineColumns.SNO,StationColumns._ID,StationColumns.NAME};
 	private Line line;
 	ViewPager mViewPager;
 
@@ -49,11 +57,12 @@ public class BusLineActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_busline);
 
-		initData();
+		query = getQueryStr();
 
 		buildViewPager();
 		buildActionBarAndViewPagerTitles();
 
+		getLoaderManager().initLoader(0, null, this);
 	}
 
 	private void buildActionBarAndViewPagerTitles() {
@@ -101,6 +110,7 @@ public class BusLineActivity extends FragmentActivity {
 			getActionBar().setSelectedNavigationItem(position);
 		}
 	};
+	private String query;
 
 	private void buildViewPager() {
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -110,14 +120,7 @@ public class BusLineActivity extends FragmentActivity {
 		mViewPager.setOnPageChangeListener(onPageChangeListener);
 	}
 
-	private void initData() {
-		String query = getQueryStr();
-		// 获取到查询字符串
-
-		//LineDao dao = new LineDao(this);
-	//	Bus b = dao.getBus(query.replace("路", ""));
-	//	line = dao.findStationsByBus(b);
-	}
+	
 
 	private String getQueryStr() {
 		Uri uri = getIntent().getData();
@@ -197,6 +200,26 @@ public class BusLineActivity extends FragmentActivity {
 				return "";
 			}
 		}
+		
+	}
+
+
+
+
+	
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		return new CursorLoader(this, BusProvider.GET_BUS_URI,
+				PROJECTION, BusColumns.NAME, new String[]{query}, null);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
 		
 	}
 }
