@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp" >
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:drawSelectorOnTop="false" />
+
+    <LinearLayout
+        android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/bg"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@id/pic"
+            android:layout_width="163.0dip"
+            android:layout_height="183.0dip"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="6.0dip"
+            android:background="@drawable/history_blank"
+            android:contentDescription="@string/app_name"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@id/noCollect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30.0dip"
+            android:gravity="center"
+            android:text="@string/no_data"
+            android:textColor="@color/dimgray" />
+
+        <TextView
+            android:id="@id/instruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:paddingTop="5.0dip"
+            android:text="@string/bus_tips_1"
+            android:textColor="@color/zong_yellow"
+            android:textSize="12.0sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60.0dip"
+            android:text="@string/bus_tips_2"
+            android:textColor="@color/zong_yellow"
+            android:textSize="12.0sp" />
+    </LinearLayout>
+
+</LinearLayout>
