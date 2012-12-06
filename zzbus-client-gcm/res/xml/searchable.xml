@@ -3,6 +3,8 @@
     android:hint="@string/search_hint"
     android:includeInGlobalSearch="true"
     android:label="@string/search_label"
+    android:inputType="number" 
+    android:imeOptions="actionSearch"
     android:searchSettingsDescription="@string/settings_description"
     android:searchSuggestAuthority="com.loveplusplus.zhengzhou.service.BusProvider"
     android:searchSuggestIntentAction="android.intent.action.VIEW"

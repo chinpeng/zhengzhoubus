@@ -49,7 +49,7 @@ public class BusDatabase extends SQLiteOpenHelper {
 	//String sql = "SELECT l.direct,l.sno,s.id,s.name FROM line l ,station s where l.bus_id=? and l.station_id=s.id order by l.sno ";
 	private static final String TAG = "BusDatabase";
 	private static final String DATABASE_NAME = "bus";
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 6;
 
 	private Context context;
 
@@ -121,12 +121,20 @@ public class BusDatabase extends SQLiteOpenHelper {
 		 * WHERE rowid = <rowId>
 		 */
 	}
+	
+	/*
+SELECT bus.id,bus.name,line.direct,line.sno ,station.id,station.name
+from line 
+JOIN  station  ON(line.station_id=station.id)
+JOIN bus  on(line.bus_id=bus.id) where line.bus_id=2
+	 * 
+	 */
 	public Cursor getLine(String busId, String[] columns) {
 		String selection = "line.bus_id = ?";
 		String[] selectionArgs = new String[] { busId };
 		
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-		builder.setTables(Tables.LINE+" inner join "+Tables.STATION+" on(line._id=station._id) ");
+		builder.setTables("line join station on(line.station_id=station._id) join bus on(line.bus_id=bus._id)");
 		
 		HashMap<String, String> map = new HashMap<String, String>();
 		
@@ -183,19 +191,15 @@ public class BusDatabase extends SQLiteOpenHelper {
 	}
 	public Cursor getBusMatches(String query, String[] columns) {
 		String selection = BusColumns.NAME + " like ?";
-		String[] selectionArgs = new String[] { query + "%" };
+		String[] selectionArgs = new String[] { "%"+query + "%" };
 		
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		builder.setTables(Tables.BUS);
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put(BusColumns.NAME, BusColumns.NAME);
-		map.put(BusColumns.DEFINITION, BusColumns.DEFINITION);
-		map.put(BusColumns.START_TIME, BusColumns.START_TIME);
-		map.put(BusColumns.END_TIME, BusColumns.END_TIME);
-		map.put(BusColumns.PRICE, BusColumns.PRICE);
-		
 		map.put(BusColumns._ID, BusColumns._ID);
 		map.put(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID, "_id AS "+ SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
+		map.put(SearchManager.SUGGEST_COLUMN_TEXT_1, "name AS "+ SearchManager.SUGGEST_COLUMN_TEXT_1);
+		map.put(SearchManager.SUGGEST_COLUMN_TEXT_2, "definition AS "+ SearchManager.SUGGEST_COLUMN_TEXT_2);
 		
 		builder.setProjectionMap(map);
 

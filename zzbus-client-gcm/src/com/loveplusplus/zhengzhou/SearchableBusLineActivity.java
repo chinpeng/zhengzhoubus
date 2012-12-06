@@ -130,7 +130,7 @@ public class SearchableBusLineActivity extends Activity {
 					Intent wordIntent = new Intent(getApplicationContext(),
 							BusLineActivity.class);
 					Uri data = Uri.withAppendedPath(
-							BusProvider.GET_BUS_URI, String.valueOf(id));
+							BusProvider.GET_LINE_URI, String.valueOf(id));
 					wordIntent.setData(data);
 					startActivity(wordIntent);
 				}

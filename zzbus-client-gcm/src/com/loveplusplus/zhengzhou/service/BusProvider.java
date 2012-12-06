@@ -39,8 +39,8 @@ public class BusProvider extends ContentProvider {
 
 	public static final Uri QUERY_CONTENT_URI = Uri.parse("content://"
 			+ AUTHORITY + "/bus");
-	public static final Uri GET_BUS_URI = Uri.parse("content://" + AUTHORITY
-			+ "/bus/#");
+	public static final Uri GET_LINE_URI = Uri.parse("content://" + AUTHORITY
+			+ "/line");
 	public static final Uri FAVORITE_CONTENT_URI = Uri.parse("content://"
 			+ AUTHORITY + "/favorite");
 
@@ -54,11 +54,13 @@ public class BusProvider extends ContentProvider {
 	private static final int SEARCH_BUS = 0;
 	private static final int GET_BUS = 1;
 	private static final int SEARCH_SUGGEST = 2;
-	
+
 	private static final int REFRESH_SHORTCUT = 3;
-	
+
 	private static final int FAVORITE_BUS = 4;
 	private static final int GET_FAVORITE_BUS = 5;
+	
+	private static final int GET_LINE = 6;
 
 	private static final UriMatcher sURIMatcher = buildUriMatcher();
 
@@ -92,6 +94,8 @@ public class BusProvider extends ContentProvider {
 
 		matcher.addURI(AUTHORITY, "favorite", FAVORITE_BUS);
 		matcher.addURI(AUTHORITY, "favorite/#", GET_FAVORITE_BUS);
+		
+		matcher.addURI(AUTHORITY, "line/#", GET_LINE);
 		return matcher;
 	}
 
@@ -111,7 +115,7 @@ public class BusProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-Log.i(TAG, uri.toString());
+		Log.i(TAG, uri.toString());
 		switch (sURIMatcher.match(uri)) {
 		case SEARCH_SUGGEST:
 			if (selectionArgs == null) {
@@ -125,12 +129,12 @@ Log.i(TAG, uri.toString());
 						"selectionArgs must be provided for the Uri: " + uri);
 			}
 			return searchBusByName(selectionArgs[0]);
-		case GET_BUS:
+		case GET_LINE:
 			return getLine(uri);
-			
+
 		case REFRESH_SHORTCUT:
 			return refreshShortcut(uri);
-		
+
 		case FAVORITE_BUS:
 			return getFavoriteBus(uri);
 		case GET_FAVORITE_BUS:
@@ -152,19 +156,17 @@ Log.i(TAG, uri.toString());
 
 	private Cursor getSuggestions(String query) {
 		Log.d(TAG, query);
-		
-		String[] columns = new String[] { BusColumns._ID,
-				BusColumns.NAME, BusColumns.DEFINITION,
-				BusColumns.START_TIME,BusColumns.END_TIME,BusColumns.PRICE,
-				SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID };
+
+		String[] columns = new String[] { BusColumns._ID, 
+				SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,SearchManager.SUGGEST_COLUMN_TEXT_1,SearchManager.SUGGEST_COLUMN_TEXT_2 };
 
 		return mBusDatase.getBusMatches(query, columns);
 	}
 
 	private Cursor searchBusByName(String query) {
 		Log.d(TAG, query);
-		String[] columns = new String[] { BusColumns._ID,
-				BusColumns.NAME, BusColumns.DEFINITION };
+		String[] columns = new String[] { BusColumns._ID, BusColumns.NAME,
+				BusColumns.DEFINITION };
 
 		return mBusDatase.getBusByName(query, columns);
 	}
@@ -178,11 +180,10 @@ Log.i(TAG, uri.toString());
 	}
 
 	private Cursor getLine(Uri uri) {
-		
 
 		String busId = uri.getLastPathSegment();
 		Log.d(TAG, uri.toString());
-		Log.d(TAG, "busId"+busId);
+		Log.d(TAG, "busId" + busId);
 		String[] columns = new String[] { LineColumns.DIRECT, LineColumns.SNO,
 				StationColumns._ID, StationColumns.NAME };
 
