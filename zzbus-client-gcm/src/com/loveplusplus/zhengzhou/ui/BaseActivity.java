@@ -1,4 +1,4 @@
-package com.loveplusplus.zhengzhou;
+package com.loveplusplus.zhengzhou.ui;
 
 import android.app.Activity;
 import android.content.Intent;

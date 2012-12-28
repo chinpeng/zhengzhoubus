@@ -1,4 +1,4 @@
-package com.loveplusplus.zhengzhou;
+package com.loveplusplus.zhengzhou.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +15,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.loveplusplus.zhengzhou.adapter.BusLineAdapter;
-import com.loveplusplus.zhengzhou.bean.Line;
-import com.loveplusplus.zhengzhou.bean.Station;
+import com.loveplusplus.zhengzhou.provider.BusContract.Line;
+import com.loveplusplus.zhengzhou.provider.BusContract.Station;
 
 public class BusLineFragment extends ListFragment {
 
 	private static final String TAG = "BusLineFragment";
 	private int direct;
-	private Line line;
+	//private Line line;
 	private List<String> stations;
 
 	public BusLineFragment() {
@@ -30,33 +30,19 @@ public class BusLineFragment extends ListFragment {
 	}
 
 	public BusLineFragment(int direct, Line line) {
-		this.line = line;
+	//	this.line = line;
 		this.direct=direct;
 		switch (direct) {
-		case 0:
-			stations = getUpBusLine();
-			break;
-		case 1:
-			stations = getDownBusLine();
-			break;
+//		case 0:
+//			stations = getUpBusLine();
+//			break;
+//		case 1:
+//			stations = getDownBusLine();
+//			break;
 		}
 	}
 
-	private List<String> getUpBusLine() {
-		return converMapToList(line.getUpStations());
-	}
-
-	private List<String> getDownBusLine() {
-		return converMapToList(line.getDownStations());
-	}
-
-	private List<String> converMapToList(SortedMap<Integer, Station> map) {
-		List<String> list = new ArrayList<String>();
-		for (Entry<Integer, Station> entry : map.entrySet()) {
-			list.add(entry.getValue().getName());
-		}
-		return list;
-	}
+	
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -79,17 +65,17 @@ public class BusLineFragment extends ListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// GpsUtil.getGps(line.getLineName(), ud, sta.get(position).getSno());
-        String lineName=line.getBus().getName();
-        String ud=String.valueOf(direct);
-        String sno=String.valueOf(position);
-        String hczd=stations.get(position);
-    Log.d(TAG, ""+lineName+" ==="+sno+"  "+ud+""+hczd);    
-		Intent intent = new Intent(getActivity(), GpsWaitingActivity.class);
-		intent.putExtra("lineName", lineName);
-		intent.putExtra("ud", ud);
-		intent.putExtra("sno", sno);
-		intent.putExtra("hczd", hczd);
-		startActivity(intent);
+//        String lineName=line.getBus().getName();
+//        String ud=String.valueOf(direct);
+//        String sno=String.valueOf(position);
+//        String hczd=stations.get(position);
+//    Log.d(TAG, ""+lineName+" ==="+sno+"  "+ud+""+hczd);    
+//		Intent intent = new Intent(getActivity(), GpsWaitingActivity.class);
+//		intent.putExtra("lineName", lineName);
+//		intent.putExtra("ud", ud);
+//		intent.putExtra("sno", sno);
+//		intent.putExtra("hczd", hczd);
+//		startActivity(intent);
 	}
 
 }

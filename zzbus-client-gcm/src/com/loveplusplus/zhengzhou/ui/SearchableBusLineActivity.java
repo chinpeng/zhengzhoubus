@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.loveplusplus.zhengzhou;
+package com.loveplusplus.zhengzhou.ui;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -35,8 +35,8 @@ import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.loveplusplus.zhengzhou.service.BusDatabase.BusColumns;
-import com.loveplusplus.zhengzhou.service.BusProvider;
+import com.loveplusplus.zhengzhou.R;
+import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 
 /**
  * The main activity for the dictionary. Displays search results triggered by
@@ -90,7 +90,7 @@ public class SearchableBusLineActivity extends Activity {
 	 */
 	private void showResults(String query) {
 
-		Cursor cursor = managedQuery(BusProvider.QUERY_CONTENT_URI, null,
+		Cursor cursor = managedQuery(Bus.CONTENT_URI, null,
 				null, new String[] { query }, null);
 
 		if (cursor == null) {
@@ -106,8 +106,8 @@ public class SearchableBusLineActivity extends Activity {
 			mTextView.setText(countString);
 
 			// Specify the columns we want to display in the result
-			String[] from = new String[] { BusColumns.NAME,
-					BusColumns.DEFINITION };
+			String[] from = new String[] { Bus.NAME,
+					Bus.DEFINITION };
 
 			// Specify the corresponding layout elements where we want the
 			// columns to go
@@ -130,7 +130,7 @@ public class SearchableBusLineActivity extends Activity {
 					Intent wordIntent = new Intent(getApplicationContext(),
 							BusLineActivity.class);
 					Uri data = Uri.withAppendedPath(
-							BusProvider.GET_LINE_URI, String.valueOf(id));
+							Bus.CONTENT_URI, String.valueOf(id));
 					wordIntent.setData(data);
 					startActivity(wordIntent);
 				}

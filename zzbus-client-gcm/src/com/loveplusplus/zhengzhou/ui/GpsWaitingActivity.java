@@ -1,4 +1,4 @@
-package com.loveplusplus.zhengzhou;
+package com.loveplusplus.zhengzhou.ui;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -12,8 +12,12 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loveplusplus.zhengzhou.service.TaskResultReceiver;
-import com.loveplusplus.zhengzhou.service.TaskService;
+import com.loveplusplus.zhengzhou.R;
+import com.loveplusplus.zhengzhou.R.id;
+import com.loveplusplus.zhengzhou.R.layout;
+import com.loveplusplus.zhengzhou.R.menu;
+import com.loveplusplus.zhengzhou.io.TaskResultReceiver;
+import com.loveplusplus.zhengzhou.io.TaskService;
 
 public class GpsWaitingActivity extends Activity  implements
 TaskResultReceiver.Receiver {

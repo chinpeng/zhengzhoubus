@@ -1,4 +1,8 @@
-package com.loveplusplus.zhengzhou;
+package com.loveplusplus.zhengzhou.ui;
+
+import com.loveplusplus.zhengzhou.R;
+import com.loveplusplus.zhengzhou.R.id;
+import com.loveplusplus.zhengzhou.R.layout;
 
 import android.content.Intent;
 import android.os.Bundle;

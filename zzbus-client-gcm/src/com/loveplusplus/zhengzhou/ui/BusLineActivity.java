@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package com.loveplusplus.zhengzhou;
+package com.loveplusplus.zhengzhou.ui;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.net.ssl.ManagerFactoryParameters;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,18 +38,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
-import com.loveplusplus.zhengzhou.bean.Line;
-import com.loveplusplus.zhengzhou.bean.Station;
-import com.loveplusplus.zhengzhou.service.BusDatabase.LineColumns;
-import com.loveplusplus.zhengzhou.service.BusDatabase.StationColumns;
+import com.loveplusplus.zhengzhou.R;
+import com.loveplusplus.zhengzhou.provider.BusContract.Line;
+import com.loveplusplus.zhengzhou.provider.BusContract.Station;
 
 /**
  * Displays a word and its definition.
  */
 public class BusLineActivity extends FragmentActivity {
 	private static final String[] PROJECTION = new String[] {
-			LineColumns.DIRECT, LineColumns.SNO, StationColumns._ID,
-			StationColumns.NAME };
+			Line.DIRECT, Line.SNO, Station._ID,
+			Station.NAME };
 	private static final String TAG = "BusLineActivity";
 	private Line line;
 	ViewPager mViewPager;
@@ -83,21 +77,21 @@ public class BusLineActivity extends FragmentActivity {
 			SortedMap<Integer, Station> up = new TreeMap<Integer, Station>();
 			SortedMap<Integer, Station> down = new TreeMap<Integer, Station>();
 
-			while (data.moveToNext()) {
-				// LineColumns.DIRECT,LineColumns.SNO,StationColumns._ID,StationColumns.NAME
-				int direct = data.getInt(0);
-				int sno = data.getInt(1);
-				int stationId = data.getInt(2);
-				String stationName = data.getString(3);
-				if (0 == direct) {
-					up.put(sno, new Station(stationId, stationName));
-				} else {
-					down.put(sno, new Station(stationId, stationName));
-				}
-
-			}
-			line.setUpStations(up);
-			line.setDownStations(down);
+//			while (data.moveToNext()) {
+//				// LineColumns.DIRECT,LineColumns.SNO,StationColumns._ID,StationColumns.NAME
+//				int direct = data.getInt(0);
+//				int sno = data.getInt(1);
+//				int stationId = data.getInt(2);
+//				String stationName = data.getString(3);
+//				if (0 == direct) {
+//					up.put(sno, new Station(stationId, stationName));
+//				} else {
+//					down.put(sno, new Station(stationId, stationName));
+//				}
+//
+//			}
+//			line.setUpStations(up);
+//			line.setDownStations(down);
 			
 		}
 	}

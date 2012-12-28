@@ -15,8 +15,6 @@
  */
 package com.loveplusplus.zhengzhou.util;
 
-import static com.loveplusplus.zhengzhou.util.CommonUtilities.displayMessage;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -51,7 +49,7 @@ public final class ServerUtilities {
      */
     public static boolean register(final Context context, final String regId) {
         Log.i(TAG, "registering device (regId = " + regId + ")");
-        String serverUrl = CommonUtilities.SERVER_URL + "/register";
+        String serverUrl = Constants.SERVER_URL + "/register";
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
         long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
@@ -61,12 +59,12 @@ public final class ServerUtilities {
         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
             Log.d(TAG, "Attempt #" + i + " to register");
             try {
-                displayMessage(context, context.getString(
+            	Constants.displayMessage(context, context.getString(
                         R.string.server_registering, i, MAX_ATTEMPTS));
                 post(serverUrl, params);
                 GCMRegistrar.setRegisteredOnServer(context, true);
                 String message = context.getString(R.string.server_registered);
-                CommonUtilities.displayMessage(context, message);
+                Constants.displayMessage(context, message);
                 return true;
             } catch (IOException e) {
                 // Here we are simplifying and retrying on any error; in a real
@@ -91,7 +89,7 @@ public final class ServerUtilities {
         }
         String message = context.getString(R.string.server_register_error,
                 MAX_ATTEMPTS);
-        CommonUtilities.displayMessage(context, message);
+        Constants.displayMessage(context, message);
         return false;
     }
 
@@ -100,14 +98,14 @@ public final class ServerUtilities {
      */
     public static void unregister(final Context context, final String regId) {
         Log.i(TAG, "unregistering device (regId = " + regId + ")");
-        String serverUrl = CommonUtilities.SERVER_URL + "/unregister";
+        String serverUrl = Constants.SERVER_URL + "/unregister";
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
         try {
             post(serverUrl, params);
             GCMRegistrar.setRegisteredOnServer(context, false);
             String message = context.getString(R.string.server_unregistered);
-            CommonUtilities.displayMessage(context, message);
+            Constants.displayMessage(context, message);
         } catch (IOException e) {
             // At this point the device is unregistered from GCM, but still
             // registered in the server.
@@ -116,7 +114,7 @@ public final class ServerUtilities {
             // a "NotRegistered" error message and should unregister the device.
             String message = context.getString(R.string.server_unregister_error,
                     e.getMessage());
-            CommonUtilities.displayMessage(context, message);
+            Constants.displayMessage(context, message);
         }
     }
 

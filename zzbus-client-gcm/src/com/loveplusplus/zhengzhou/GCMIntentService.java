@@ -15,7 +15,6 @@
  */
 package com.loveplusplus.zhengzhou;
 
-import static com.loveplusplus.zhengzhou.util.CommonUtilities.SENDER_ID;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,7 +25,8 @@ import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
-import com.loveplusplus.zhengzhou.R;
+import com.loveplusplus.zhengzhou.ui.NotifyDetailActivity;
+import com.loveplusplus.zhengzhou.util.Constants;
 import com.loveplusplus.zhengzhou.util.ServerUtilities;
 
 /**
@@ -34,11 +34,10 @@ import com.loveplusplus.zhengzhou.util.ServerUtilities;
  */
 public class GCMIntentService extends GCMBaseIntentService {
 
-    @SuppressWarnings("hiding")
     private static final String TAG = "GCMIntentService";
 
     public GCMIntentService() {
-        super(SENDER_ID);
+        super(Constants.SENDER_ID);
     }
 
     @Override

@@ -1,4 +1,7 @@
-package com.loveplusplus.zhengzhou;
+package com.loveplusplus.zhengzhou.ui;
+
+import com.loveplusplus.zhengzhou.R;
+import com.loveplusplus.zhengzhou.R.xml;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;

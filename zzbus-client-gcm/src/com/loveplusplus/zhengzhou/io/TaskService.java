@@ -1,4 +1,4 @@
-package com.loveplusplus.zhengzhou.service;
+package com.loveplusplus.zhengzhou.io;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
-import com.loveplusplus.zhengzhou.io.RemoteExecutor;
 
 public class TaskService extends IntentService {
 
