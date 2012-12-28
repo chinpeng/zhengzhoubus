@@ -16,11 +16,6 @@
 
 package com.loveplusplus.zhengzhou;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import javax.net.ssl.ManagerFactoryParameters;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.LoaderManager;
@@ -37,25 +32,23 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
 import com.loveplusplus.zhengzhou.bean.Line;
-import com.loveplusplus.zhengzhou.bean.Station;
+import com.loveplusplus.zhengzhou.service.BusDatabase;
+import com.loveplusplus.zhengzhou.service.BusDatabase.BusColumns;
 import com.loveplusplus.zhengzhou.service.BusDatabase.LineColumns;
 import com.loveplusplus.zhengzhou.service.BusDatabase.StationColumns;
+import com.loveplusplus.zhengzhou.service.BusProvider;
 
 /**
  * Displays a word and its definition.
  */
-public class BusLineActivity extends FragmentActivity {
-	private static final String[] PROJECTION = new String[] {
-			LineColumns.DIRECT, LineColumns.SNO, StationColumns._ID,
-			StationColumns.NAME };
-	private static final String TAG = "BusLineActivity";
+public class BusLineActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+	private static final String[] PROJECTION = new String[]{LineColumns.DIRECT,LineColumns.SNO,StationColumns._ID,StationColumns.NAME};
 	private Line line;
 	ViewPager mViewPager;
 
@@ -64,42 +57,12 @@ public class BusLineActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_busline);
 
-		initData();
+		query = getQueryStr();
 
 		buildViewPager();
 		buildActionBarAndViewPagerTitles();
 
-	}
-
-	private void initData() {
-		Uri uri = getIntent().getData();
-		Log.d(TAG, "--------_--------" + uri.toString());
-		Cursor data = managedQuery(uri, PROJECTION,null,null,null);
-
-		if (data == null) {
-			finish();
-		} else {
-			line = new Line();
-			SortedMap<Integer, Station> up = new TreeMap<Integer, Station>();
-			SortedMap<Integer, Station> down = new TreeMap<Integer, Station>();
-
-			while (data.moveToNext()) {
-				// LineColumns.DIRECT,LineColumns.SNO,StationColumns._ID,StationColumns.NAME
-				int direct = data.getInt(0);
-				int sno = data.getInt(1);
-				int stationId = data.getInt(2);
-				String stationName = data.getString(3);
-				if (0 == direct) {
-					up.put(sno, new Station(stationId, stationName));
-				} else {
-					down.put(sno, new Station(stationId, stationName));
-				}
-
-			}
-			line.setUpStations(up);
-			line.setDownStations(down);
-			
-		}
+		getLoaderManager().initLoader(0, null, this);
 	}
 
 	private void buildActionBarAndViewPagerTitles() {
@@ -119,10 +82,11 @@ public class BusLineActivity extends FragmentActivity {
 
 	private class MainTabListener implements ActionBar.TabListener {
 
+
 		@Override
 		public void onTabReselected(Tab tab, android.app.FragmentTransaction ft) {
 			// TODO Auto-generated method stub
-
+			
 		}
 
 		@Override
@@ -136,7 +100,7 @@ public class BusLineActivity extends FragmentActivity {
 		@Override
 		public void onTabUnselected(Tab tab, android.app.FragmentTransaction ft) {
 			// TODO Auto-generated method stub
-
+			
 		}
 	}
 
@@ -146,14 +110,31 @@ public class BusLineActivity extends FragmentActivity {
 			getActionBar().setSelectedNavigationItem(position);
 		}
 	};
+	private String query;
 
 	private void buildViewPager() {
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
-		BusLinePagerAdapter adapter = new BusLinePagerAdapter(
-				getSupportFragmentManager());
+		BusLinePagerAdapter adapter = new BusLinePagerAdapter(getSupportFragmentManager());
 		mViewPager.setOffscreenPageLimit(5);
 		mViewPager.setAdapter(adapter);
 		mViewPager.setOnPageChangeListener(onPageChangeListener);
+	}
+
+	
+
+	private String getQueryStr() {
+		Uri uri = getIntent().getData();
+		Cursor cursor = managedQuery(uri, null, null, null, null);
+
+		if (cursor == null) {
+			finish();
+			return null;
+		} else {
+			cursor.moveToFirst();
+			int wIndex = cursor.getColumnIndexOrThrow(BusDatabase.BusColumns.NAME);
+			String query = cursor.getString(wIndex);
+			return query;
+		}
 	}
 
 	@Override
@@ -182,7 +163,10 @@ public class BusLineActivity extends FragmentActivity {
 		}
 	}
 
-	private class BusLinePagerAdapter extends FragmentStatePagerAdapter {
+	
+
+	
+	private class BusLinePagerAdapter extends FragmentStatePagerAdapter{
 
 		public BusLinePagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -192,9 +176,9 @@ public class BusLineActivity extends FragmentActivity {
 		public Fragment getItem(int i) {
 			switch (i) {
 			case 0:
-				return new BusLineFragment(0, line);
+				return new BusLineFragment(0,line);
 			case 1:
-				return new BusLineFragment(1, line);
+				return new BusLineFragment(1,line);
 			default:
 				return null;
 			}
@@ -216,10 +200,26 @@ public class BusLineActivity extends FragmentActivity {
 				return "";
 			}
 		}
-
+		
 	}
 
-	
+
+
 
 	
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		return new CursorLoader(this, BusProvider.GET_BUS_URI,
+				PROJECTION, BusColumns.NAME, new String[]{query}, null);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		
+	}
 }
