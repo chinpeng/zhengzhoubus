@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">郑州公交</string>
+    <string name="about">关于</string>
+    <string name="up">上行线路</string>
+    <string name="down">下行线路</string>
+    <string name="settings">设置</string>
+    <string name="menu_share">分享</string>
+    <string name="menu_search">搜索</string>
+    <string name="menu_settings">设置</string>
+    <string name="menu_about">关于</string>
+    <string name="imagedesc">imageDesc</string>
+    <string name="share_content">郑州本地通，轻松通郑州</string>
+    <string name="app_version">"版本: "</string>
+    <string name="app_version_test">V 1.5</string>
+    <string name="weibo">" @feicien_程辉 "</string>
+    <string name="qq">" 200938337"</string>
+    <string name="about_tip_1">"如需了解最新动态,请关注新浪微博; "</string>
+    <string name="about_tip_2">"   如有疑问和需求,  来QQ群一起交流。 "</string>
+    <string name="pref_push_summ">是否接收推送信息</string>
+    <string name="pref_push">推送</string>
+    <string name="search_label">郑州公交</string>
+    <string name="search_hint">请输入公交线路</string>
+    <string name="menu_refresh">刷新</string>
+    <string name="settings_description">Definitions of words</string>
+    <string name="search_instructions">点击图标开始查询</string>
+    <plurals name="search_results">
+        <item quantity="one">%1$d 结果 \"%2$s\": </item>
+        <item quantity="other">%1$d 结果 \"%2$s\": </item>
+    </plurals>
+    <string name="no_results">没有查询到结果： \"%s\"</string>
+    <string name="no_data">暂无收藏记录</string>
+    <string name="bus_tips_1">目前提供公交集团在线200余条线路实时到站信息</string>
+    <string name="bus_tips_2">更多线路不断增加中&#8230;</string>
+    <string name="map">长按地图可以显示附近站点</string>
+    <string name="waiting">正在查询</string>
+
+    
+    <string name="error_config">Please set the %1$s constant and recompile the app.</string>
+    <string name="already_registered">Device is already registered on server.</string>
+    <string name="gcm_registered">From GCM: device successfully registered!</string>
+    <string name="gcm_unregistered">From GCM: device successfully unregistered!</string>
+    <string name="gcm_message">From GCM: you got message!</string>
+    <string name="gcm_error">From GCM: error (%1$s).</string>
+    <string name="gcm_recoverable_error">From GCM: recoverable error (%1$s).</string>
+    <string name="gcm_deleted">From GCM: server deleted %1$d pending messages!</string>
+    <string name="server_registering">Trying (attempt %1$d/%2$d) to register device on Demo Server.</string>
+    <string name="server_registered">From Demo Server: successfully added device!</string>
+    <string name="server_unregistered">From Demo Server: successfully removed device!</string>
+    <string name="server_register_error">Could not register device on Demo Server after %1$d attempts.</string>
+    <string name="server_unregister_error">Could not unregister device on Demo Server (%1$s).</string>
+    <string name="options_register">注册</string>
+    <string name="options_unregister">Unregister</string>
+    <string name="options_clear">Clear</string>
+    <string name="options_exit">退出</string>
+    <string name="title_activity_notify_detail">推送信息</string>
+</resources>
