@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="list_desc_color">#ffa5a5a5</color>
+    <color name="main_title_color">#fff1f2f4</color>
+    <color name="list_title_color">#ff000000</color>
+    <color name="microhot_author_text_color">#ff558bc4</color>
+    <color name="white">#ffffffff</color>
+    <color name="zong_yellow">#ffffcc00</color>
+    <color name="black">#ff000000</color>
+    <color name="dimgray">#ff696969</color>
+    <color name="gd_action_bar_tint">#ffa8c24e</color>
+    <color name="gd_action_bar_divider_tint">#77ffffff</color>
+    <color name="text_color">#ff558bc4</color>
+     <color name="accent_1">#ff29549f</color>
+     <color name="body_text_1">#ff000000</color>
+</resources>
