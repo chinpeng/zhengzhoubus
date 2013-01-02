@@ -8,13 +8,13 @@
     <string name="menu_search">搜索</string>
     <string name="menu_settings">设置</string>
     <string name="menu_about">关于</string>
-    <string name="share_content">郑州本地通，轻松通郑州</string>
-    <string name="app_version">"版本: "</string>
+    <string name="share_content">郑州公交查询，可以查询200余条公交线路的实时运行信息，下载地址：http://play.google.com/store/apps/details?id=com.loveplusplus.zhengzhou</string>
+    <string name="app_version">版本: </string>
     <string name="app_version_test">V 1.5</string>
-    <string name="weibo">" @feicien_程辉 "</string>
-    <string name="qq">" 200938337"</string>
-    <string name="about_tip_1">"如需了解最新动态,请关注新浪微博; "</string>
-    <string name="about_tip_2">"   如有疑问和需求,  来QQ群一起交流。 "</string>
+    <string name="weibo">"@feicien_程辉"</string>
+    <string name="qq">200938337</string>
+    <string name="about_tip_1">如需了解最新动态,请关注新浪微博;</string>
+    <string name="about_tip_2">如有疑问和需求,  来QQ群一起交流。</string>
     <string name="pref_push_summ">是否接收推送信息</string>
     <string name="pref_push">推送</string>
     <string name="search_label">郑州公交</string>
@@ -22,10 +22,7 @@
     <string name="menu_refresh">刷新</string>
     <string name="search_instructions">点击图标开始查询</string>
 
-    <plurals name="search_results">
-        <item quantity="one">%1$d 结果 \"%2$s\": </item>
-        <item quantity="other">%1$d 结果 \"%2$s\": </item>
-    </plurals>
+    <string name="search_results">你搜索的是:\"%1$s\",有%2$d条结果: </string>
 
     <string name="no_data">暂无收藏记录</string>
     <string name="bus_tips_1">目前提供公交集团在线200余条线路实时到站信息</string>

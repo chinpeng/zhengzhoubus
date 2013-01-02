@@ -39,10 +39,6 @@ import android.widget.TextView;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 
-/**
- * The main activity for the dictionary. Displays search results triggered by
- * the search dialog and handles actions from search suggestions.
- */
 public class SearchableBusLineActivity extends ListActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -126,8 +122,7 @@ public class SearchableBusLineActivity extends ListActivity implements
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 		int count = data.getCount();
-		String countString = getResources().getQuantityString(
-				R.plurals.search_results, count, new Object[] { count, query });
+		String countString = getResources().getString(R.string.search_results,new Object[] { query,count});
 		mTextView.setText(countString);
 		adapter.swapCursor(data);
 	}
