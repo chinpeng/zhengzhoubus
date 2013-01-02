@@ -6,33 +6,38 @@ import android.provider.BaseColumns;
 public class BusContract {
 
 	interface BusColumns {
-		String NAME = "name";
-		String START_TIME = "start_time";
-		String END_TIME = "end_time";
-		String PRICE = "price";
-		String CARD = "card";
-		String COMPANY = "company";
-		String DEFINITION = "definition";
+		String NAME = "bus_name";
+		String ALIAS="bus_alias";//改名
+		String FROM="bus_from";//起点
+		String TO="bus_to";//终点
+		String START_TIME = "bus_start_time";
+		String END_TIME = "bus_end_time";
+		String PRICE = "bus_price";
+		String CARD = "bus_card";
+		String COMPANY = "bus_company";
+		String DEFINITION = "bus_definition";
 
 	}
 
 	interface LineColumns {
-		String BUS_ID = "bus_id";
-		String STATION_ID = "station_id";
-		String DIRECT = "direct";
-		String SNO = "son";
+		String BUS_ID = "line_bus_id";
+		String STATION_ID = "line_station_id";
+		String DIRECT = "line_direct";
+		String SNO = "line_sno";
 
 	}
 
 	interface StationColumns {
-		String NAME = "name";
+		String NAME = "station_name";
+		String LATITUDE="station_latitude";
+		String LONGTITUDE="station_longtitude";
 	}
 
 	interface FavoriteColumns {
-		String BUS_NAME = "bus_name";
-		String DIRECT = "direct";
-		String SNO = "sno";
-		String STATION_NAME = "station_name";
+		String BUS_NAME = "favorite_bus_name";
+		String DIRECT = "favorite_direct";
+		String SNO = "favorite_sno";
+		String STATION_NAME = "favorite_station_name";
 	}
 
 	public static final String CONTENT_AUTHORITY =  "com.loveplusplus.zhengzhou.provider.BusProvider";
@@ -40,7 +45,7 @@ public class BusContract {
 	public static final Uri BASE_CONTENT_URI = Uri.parse("content://"
 			+ CONTENT_AUTHORITY);
 
-	public static final String PATH_BUS = "bus";
+	public static final String PATH_BUS = "bus_info";
 	public static final String PATH_LINE = "line";
 	public static final String PATH_STATION = "station";
 	public static final String PATH_FAVORITE = "favorite";
@@ -53,7 +58,7 @@ public class BusContract {
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.bus";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.bus";
 
-		public static Uri buildCategoryUri(String categoryId) {
+		public static Uri buildBusUri(String categoryId) {
 			return CONTENT_URI.buildUpon().appendPath(categoryId).build();
 		}
 	}
@@ -66,7 +71,7 @@ public class BusContract {
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.line";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.line";
 
-		public static Uri buildSpecialityUri(String specialityId) {
+		public static Uri buildLineUri(String specialityId) {
 			return CONTENT_URI.buildUpon().appendPath(specialityId).build();
 		}
 	}
@@ -80,7 +85,7 @@ public class BusContract {
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.station";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.station";
 
-		public static Uri buildTableUri(String tableId) {
+		public static Uri buildStationUri(String tableId) {
 			return CONTENT_URI.buildUpon().appendPath(tableId).build();
 		}
 	}
@@ -93,7 +98,7 @@ public class BusContract {
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.favorite";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.favorite";
 		
-		public static Uri buildTableUri(String tableId) {
+		public static Uri buildFavoriteUri(String tableId) {
 			return CONTENT_URI.buildUpon().appendPath(tableId).build();
 		}
 	}

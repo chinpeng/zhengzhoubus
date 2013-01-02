@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.loveplusplus.zhengzhou"
     android:versionCode="3"
@@ -10,6 +11,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
 
     <permission
         android:name="com.loveplusplus.zhengzhou.permission.C2D_MESSAGE"
@@ -19,10 +22,10 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
-        android:allowBackup="false"
-        android:icon="@drawable/ico_bus"
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.Holo.Light" >
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".ui.HomeActivity"
             android:launchMode="singleTop" >
@@ -39,7 +42,10 @@
             android:name=".ui.SettingsActivity"
             android:label="@string/settings" />
         <activity android:name=".ui.BusLineActivity" />
-        <activity android:name=".GpsWaitingActivity" />
+        <activity android:name=".ui.GpsWaitingActivity" />
+        <activity android:name=".ui.NotifyDetailActivity" />
+        <activity android:name=".ui.StationMapActivity" />
+        <activity android:name=".ui.StationsActivity" />
         <activity
             android:name=".ui.SearchableBusLineActivity"
             android:exported="false"
@@ -67,28 +73,19 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".GCMIntentService" />
-
-        <activity
-            android:name=".ui.NotifyDetailActivity"
-            android:label="@string/title_activity_notify_detail" >
-        </activity>
-
         <provider
-            android:name="com.loveplusplus.zhengzhou.provider.BusProvider"
+            android:name=".provider.BusProvider"
             android:authorities="com.loveplusplus.zhengzhou.provider.BusProvider"
             android:exported="false" />
 
-        <service android:name=".service.TaskService" />
+        <service android:name=".GCMIntentService" />
+        <service android:name=".io.TaskService" />
 
         <meta-data
             android:name="android.app.default_searchable"
-            android:value=".SearchableBusLineActivity" />
+            android:value=".ui.SearchableBusLineActivity" />
 
         <uses-library android:name="com.google.android.maps" />
-
-        <activity android:name=".ui.StationMapActivity" >
-        </activity>
     </application>
 
 </manifest>

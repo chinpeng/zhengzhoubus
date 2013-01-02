@@ -11,7 +11,7 @@
         android:layout_marginTop="30.0dip" >
 
         <ImageView
-            android:id="@id/backBus"
+            android:id="@+id/backBus"
             android:layout_width="90.0dip"
             android:layout_height="90.0dip"
             android:background="@drawable/about"
@@ -53,7 +53,7 @@
             android:textSize="14.0sp" />
 
         <TextView
-            android:id="@id/version"
+            android:id="@+id/version"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -95,7 +95,7 @@
         android:layout_marginTop="20.0dip" >
 
         <ImageView
-            android:id="@id/sina_weibo"
+            android:id="@+id/sina_weibo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="80.0dip"
@@ -119,7 +119,7 @@
         android:layout_marginTop="20.0dip" >
 
         <ImageView
-            android:id="@id/qq_qun"
+            android:id="@+id/qq_qun"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="80.0dip"

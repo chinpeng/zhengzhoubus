@@ -13,48 +13,45 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loveplusplus.zhengzhou.R;
-import com.loveplusplus.zhengzhou.R.id;
-import com.loveplusplus.zhengzhou.R.layout;
-import com.loveplusplus.zhengzhou.R.menu;
 import com.loveplusplus.zhengzhou.io.TaskResultReceiver;
 import com.loveplusplus.zhengzhou.io.TaskService;
 
-public class GpsWaitingActivity extends Activity  implements
-TaskResultReceiver.Receiver {
+public class GpsWaitingActivity extends Activity implements
+		TaskResultReceiver.Receiver {
 
 	private ProgressDialog progressDialog;
 	private TaskResultReceiver taskResultReceiver;
 	private TextView lineName;
+	private TextView lineDirect;
+	private TextView lineWaitStation;
+	private TextView lineWaitInfo;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.gps_waiting);
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		
-		lineName = (TextView)findViewById(R.id.line_name);
-		
-		
+		lineName = (TextView) findViewById(R.id.line_name);
+		lineDirect = (TextView) findViewById(R.id.line_direct);
+		lineWaitStation = (TextView) findViewById(R.id.line_wait_station);
+		lineWaitInfo = (TextView) findViewById(R.id.line_wait_info);
 		taskResultReceiver = new TaskResultReceiver(new Handler());
 		taskResultReceiver.setReceiver(this);
-		
-		
 		refresh();
 	}
 
-
 	private void refresh() {
-		Intent intent = new Intent(TaskService.EXTRA_STATUS_RECEIVER,null, GpsWaitingActivity.this, TaskService.class);
-		intent.putExtra(TaskService.EXTRA_STATUS_RECEIVER,taskResultReceiver);
+		Intent intent = new Intent(TaskService.EXTRA_STATUS_RECEIVER, null,
+				GpsWaitingActivity.this, TaskService.class);
+		intent.putExtra(TaskService.EXTRA_STATUS_RECEIVER, taskResultReceiver);
 		intent.putExtra("lineName", getIntent().getStringExtra("lineName"));
 		intent.putExtra("ud", getIntent().getStringExtra("ud"));
 		intent.putExtra("sno", getIntent().getStringExtra("sno"));
 		intent.putExtra("hczd", getIntent().getStringExtra("hczd"));
 		startService(intent);
 	}
-	
-	
+
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {
 		switch (resultCode) {
@@ -64,26 +61,29 @@ TaskResultReceiver.Receiver {
 			progressDialog.show();
 			break;
 		case TaskService.STATUS_FINISHED:
-			// List results = resultData.getParcelableList("results");
-			// do something interesting
-			// hide progress
 			progressDialog.dismiss();
-			lineName.setText(resultData.getString("response"));
+			String response=resultData.getString("response");
+			String[] result = response.split("\n");
+			lineName.setText(result[0]);
+			lineDirect.setText(result[1]);
+			lineWaitStation.setText(result[2]);
+			lineWaitInfo.setText(result[3]+result[4]+result[5]);
 			break;
 		case TaskService.STATUS_ERROR:
-			// handle the error;
 			progressDialog.dismiss();
-			Toast.makeText(this,resultData.getString(Intent.EXTRA_TEXT), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, resultData.getString(Intent.EXTRA_TEXT),
+					Toast.LENGTH_LONG).show();
 			break;
 		}
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu_refresh, menu);
 		return true;
 	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -99,5 +99,5 @@ TaskResultReceiver.Receiver {
 			return false;
 		}
 	}
-	
+
 }

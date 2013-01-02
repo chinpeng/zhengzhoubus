@@ -33,6 +33,9 @@ public class Constants {
      * Intent's extra that contains the message to be displayed.
      */
     static final String EXTRA_MESSAGE = "message";
+	public static final String BUS_URL = SERVER_URL+"/api/bus";
+	public static final String LINE_URL = SERVER_URL+"/api/line";
+	public static final String STATION_URL = SERVER_URL+"/api/station";
 
     /**
      * Notifies UI to display a message.

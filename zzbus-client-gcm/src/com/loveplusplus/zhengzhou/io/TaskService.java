@@ -1,5 +1,7 @@
 package com.loveplusplus.zhengzhou.io;
 
+import com.loveplusplus.zhengzhou.util.ServerUtilities;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +18,6 @@ public class TaskService extends IntentService {
 	public static final int STATUS_ERROR = 0x2;
 	public static final int STATUS_FINISHED = 0x3;
 
-	private RemoteExecutor mRemoteExecutor;
 
 	// 需要一个没有参数的构造方法
 	public TaskService() {
@@ -27,7 +28,6 @@ public class TaskService extends IntentService {
 	public void onCreate() {
 		super.onCreate();
 		Log.d(TAG, "TaskService start....");
-		mRemoteExecutor = new RemoteExecutor();
 	}
 
 	@Override
@@ -43,15 +43,14 @@ public class TaskService extends IntentService {
 			String hczd = intent.getStringExtra("hczd");
 			
 			// 调用http
-			String back = mRemoteExecutor.request(lineName,ud,sno,hczd);
-			Log.d(TAG, back.toString());
+			String back = ServerUtilities.getGps(lineName,ud,sno,hczd);
+			Log.d(TAG, back);
 			Bundle b = new Bundle();
 			b.putString("response", back);
 			receiver.send(STATUS_FINISHED, b);
 		} catch (Exception e) {
 			Log.e(TAG, "服务器异常", e);
 			if (receiver != null) {
-				// Pass back error to surface listener
 				Bundle bundle = new Bundle();
 				bundle.putString(Intent.EXTRA_TEXT, "服务器异常");
 				receiver.send(STATUS_ERROR, bundle);

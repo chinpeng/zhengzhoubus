@@ -1,42 +1,24 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.loveplusplus.zhengzhou.ui;
-
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
+import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
+import android.widget.SimpleCursorAdapter;
 
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Line;
@@ -45,109 +27,25 @@ import com.loveplusplus.zhengzhou.provider.BusContract.Station;
 /**
  * Displays a word and its definition.
  */
-public class BusLineActivity extends FragmentActivity {
-	private static final String[] PROJECTION = new String[] {
-			Line.DIRECT, Line.SNO, Station._ID,
-			Station.NAME };
-	private static final String TAG = "BusLineActivity";
-	private Line line;
-	ViewPager mViewPager;
+public class BusLineActivity extends Activity implements
+		LoaderManager.LoaderCallbacks<Cursor> {
+	public static SimpleCursorAdapter mAdapter = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_busline);
-
-		initData();
-
-		buildViewPager();
-		buildActionBarAndViewPagerTitles();
-
-	}
-
-	private void initData() {
-		Uri uri = getIntent().getData();
-		Log.d(TAG, "--------_--------" + uri.toString());
-		Cursor data = managedQuery(uri, PROJECTION,null,null,null);
-
-		if (data == null) {
-			finish();
-		} else {
-			line = new Line();
-			SortedMap<Integer, Station> up = new TreeMap<Integer, Station>();
-			SortedMap<Integer, Station> down = new TreeMap<Integer, Station>();
-
-//			while (data.moveToNext()) {
-//				// LineColumns.DIRECT,LineColumns.SNO,StationColumns._ID,StationColumns.NAME
-//				int direct = data.getInt(0);
-//				int sno = data.getInt(1);
-//				int stationId = data.getInt(2);
-//				String stationName = data.getString(3);
-//				if (0 == direct) {
-//					up.put(sno, new Station(stationId, stationName));
-//				} else {
-//					down.put(sno, new Station(stationId, stationName));
-//				}
-//
-//			}
-//			line.setUpStations(up);
-//			line.setDownStations(down);
-			
-		}
-	}
-
-	private void buildActionBarAndViewPagerTitles() {
-		ActionBar actionBar = getActionBar();
+		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
+		Tab tab = actionBar.newTab().setText("上行")
+				.setTabListener(new TabListener(this, "up"));
+		actionBar.addTab(tab);
 
-		MainTabListener tabListener = new MainTabListener();
-
-		actionBar.addTab(actionBar.newTab().setText(getString(R.string.up))
-				.setTabListener(tabListener));
-
-		actionBar.addTab(actionBar.newTab().setText(getString(R.string.down))
-				.setTabListener(tabListener));
-
-	}
-
-	private class MainTabListener implements ActionBar.TabListener {
-
-		@Override
-		public void onTabReselected(Tab tab, android.app.FragmentTransaction ft) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
-			// TODO Auto-generated method stub
-			if (mViewPager.getCurrentItem() != tab.getPosition()) {
-				mViewPager.setCurrentItem(tab.getPosition());
-			}
-		}
-
-		@Override
-		public void onTabUnselected(Tab tab, android.app.FragmentTransaction ft) {
-			// TODO Auto-generated method stub
-
-		}
-	}
-
-	ViewPager.SimpleOnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
-		@Override
-		public void onPageSelected(int position) {
-			getActionBar().setSelectedNavigationItem(position);
-		}
-	};
-
-	private void buildViewPager() {
-		mViewPager = (ViewPager) findViewById(R.id.viewpager);
-		BusLinePagerAdapter adapter = new BusLinePagerAdapter(
-				getSupportFragmentManager());
-		mViewPager.setOffscreenPageLimit(5);
-		mViewPager.setAdapter(adapter);
-		mViewPager.setOnPageChangeListener(onPageChangeListener);
+		tab = actionBar.newTab().setText("下行")
+				.setTabListener(new TabListener(this, "down"));
+		actionBar.addTab(tab);
+		mAdapter = new SimpleCursorAdapter(this, R.layout.busline_list_item,
+				null, new String[] { Station.NAME }, new int[] { R.id.sta }, 0);
 	}
 
 	@Override
@@ -176,44 +74,113 @@ public class BusLineActivity extends FragmentActivity {
 		}
 	}
 
-	private class BusLinePagerAdapter extends FragmentStatePagerAdapter {
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		return new CursorLoader(this, getIntent().getData(), new String[] {
+				Line.DIRECT, Line.SNO, Station._ID, Station.NAME }, "direct=?",
+				new String[] { arg1.getString("direct") }, null);
 
-		public BusLinePagerAdapter(FragmentManager fm) {
-			super(fm);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor data) {
+		mAdapter.swapCursor(data);
+		// mAdapter.notifyDataSetChanged();
+
+		ListFragment up = (ListFragment) getFragmentManager()
+				.findFragmentByTag("up");
+
+		data.moveToFirst();
+		String from = data.getString((data.getColumnIndex(Station.NAME)));
+		data.moveToLast();
+		String to = data.getString((data.getColumnIndex(Station.NAME)));
+
+		if (null != up) {
+			up.setListAdapter(mAdapter);
+			getActionBar().getTabAt(0).setText("上行(" + from + "开往" + to + ")");
 		}
-
-		@Override
-		public Fragment getItem(int i) {
-			switch (i) {
-			case 0:
-				return new BusLineFragment(0, line);
-			case 1:
-				return new BusLineFragment(1, line);
-			default:
-				return null;
-			}
-		}
-
-		@Override
-		public int getCount() {
-			return 2;
-		}
-
-		@Override
-		public CharSequence getPageTitle(int position) {
-			switch (position) {
-			case 0:
-				return "上行";
-			case 1:
-				return "下行";
-			default:
-				return "";
-			}
+		ListFragment down = (ListFragment) getFragmentManager()
+				.findFragmentByTag("down");
+		if (null != down) {
+			down.setListAdapter(mAdapter);
+			getActionBar().getTabAt(1).setText("上行(" + from + "开往" + to + ")");
 		}
 
 	}
 
-	
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		mAdapter.swapCursor(null);
+	}
 
-	
+	// SimpleCursorAdapter mAdapter=new SimpleCursorAdapter(getActivity(),
+	// R.layout.busline_list_item, getArguments().g, new String[]{Station.NAME},
+	// new int[]{R.id.sta}, 0);
+	// setListAdapter(mAdapter);
+
+	// GpsUtil.getGps(line.getLineName(), ud, sta.get(position).getSno());
+	// String lineName=line.getBus().getName();
+	// String ud=String.valueOf(direct);
+	// String sno=String.valueOf(position);
+	// String hczd=stations.get(position);
+	// Log.d(TAG, ""+lineName+" ==="+sno+"  "+ud+""+hczd);
+	// Intent intent = new Intent(getActivity(), GpsWaitingActivity.class);
+	// intent.putExtra("lineName", lineName);
+	// intent.putExtra("ud", ud);
+	// intent.putExtra("sno", sno);
+	// intent.putExtra("hczd", hczd);
+	// startActivity(intent);
+
+	public static class TabListener implements ActionBar.TabListener {
+		private static final String TAG = "TabListener";
+		private final BusLineActivity mActivity;
+		private final String mTag;
+		private ListFragment mFragment;
+
+		public TabListener(Activity activity, String tag) {
+			mActivity = (BusLineActivity) activity;
+			mTag = tag;
+		}
+
+		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+
+			Log.d(TAG, tab.toString());
+			String direct = "0";
+			if (mTag.equals("up")) {
+				direct = "0";
+			} else if (mTag.equals("down")) {
+				direct = "1";
+			}
+			Bundle args = new Bundle();
+			args.putString("direct", direct);
+
+			if (mFragment == null) {
+				mFragment = (ListFragment) ListFragment.instantiate(mActivity,
+						ListFragment.class.getName());
+				// mFragment.setListAdapter(mAdapter);
+				ft.add(android.R.id.content, mFragment, mTag);
+			} else {
+				ft.attach(mFragment);
+			}
+
+			Loader<Object> loader = mActivity.getLoaderManager().getLoader(0);
+			if (null == loader) {
+				mActivity.getLoaderManager().initLoader(0, args, mActivity);
+			} else {
+				mActivity.getLoaderManager().restartLoader(0, args, mActivity);
+			}
+
+		}
+
+		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			if (mFragment != null) {
+				// Detach the fragment, because another one is being attached
+				ft.detach(mFragment);
+			}
+		}
+
+		public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		}
+	}
+
 }

@@ -17,10 +17,13 @@
 package com.loveplusplus.zhengzhou.ui;
 
 import android.app.ActionBar;
-import android.app.Activity;
+import android.app.ListActivity;
+import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,8 +31,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
@@ -42,12 +43,13 @@ import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
  * The main activity for the dictionary. Displays search results triggered by
  * the search dialog and handles actions from search suggestions.
  */
-public class SearchableBusLineActivity extends Activity {
+public class SearchableBusLineActivity extends ListActivity implements
+		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private TextView mTextView;
-	private ListView mListView;
 	private SearchView searchView;
 	private String query;
+	private SimpleCursorAdapter adapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,9 +57,15 @@ public class SearchableBusLineActivity extends Activity {
 		setContentView(R.layout.activity_search);
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		
+
 		mTextView = (TextView) findViewById(R.id.text);
-		mListView = (ListView) findViewById(R.id.list);
+
+		adapter = new SimpleCursorAdapter(this, R.layout.bus_search_suggest,
+				null, new String[] { Bus.NAME, Bus.DEFINITION }, new int[] {
+						R.id.bus_name, R.id.bus_definition }, 0);
+
+		setListAdapter(adapter);
+		getLoaderManager().initLoader(0, null, this);
 		handleIntent(getIntent());
 	}
 
@@ -69,72 +77,11 @@ public class SearchableBusLineActivity extends Activity {
 	private void handleIntent(Intent intent) {
 
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-			// handles a click on a search suggestion; launches activity to show
-			// word
-			Intent wordIntent = new Intent(this, BusLineActivity.class);
+			Intent wordIntent = new Intent(this, StationsActivity.class);
 			wordIntent.setData(intent.getData());
 			startActivity(wordIntent);
 		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			// handles a search query
-			 query = intent.getStringExtra(SearchManager.QUERY);
-			
-			showResults(query);
-		}
-	}
-
-	/**
-	 * Searches the dictionary and displays results for the given query.
-	 * 
-	 * @param query
-	 *            The search query
-	 */
-	private void showResults(String query) {
-
-		Cursor cursor = managedQuery(Bus.CONTENT_URI, null,
-				null, new String[] { query }, null);
-
-		if (cursor == null) {
-			// There are no results
-			mTextView.setText(getString(R.string.no_results,
-					new Object[] { query }));
-		} else {
-			// Display the number of results
-			int count = cursor.getCount();
-			String countString = getResources().getQuantityString(
-					R.plurals.search_results, count,
-					new Object[] { count, query });
-			mTextView.setText(countString);
-
-			// Specify the columns we want to display in the result
-			String[] from = new String[] { Bus.NAME,
-					Bus.DEFINITION };
-
-			// Specify the corresponding layout elements where we want the
-			// columns to go
-			int[] to = new int[] { R.id.bus_name, R.id.bus_definition };
-
-			// Create a simple cursor adapter for the definitions and apply them
-			// to the ListView
-			SimpleCursorAdapter words = new SimpleCursorAdapter(this,
-					R.layout.bus_search_suggest, cursor, from, to);
-			mListView.setAdapter(words);
-
-			// Define the on-click listener for the list items
-			mListView.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					// Build the Intent used to open WordActivity with a
-					// specific word Uri
-					Intent wordIntent = new Intent(getApplicationContext(),
-							BusLineActivity.class);
-					Uri data = Uri.withAppendedPath(
-							Bus.CONTENT_URI, String.valueOf(id));
-					wordIntent.setData(data);
-					startActivity(wordIntent);
-				}
-			});
+			getLoaderManager().restartLoader(0, intent.getExtras(), this);
 		}
 	}
 
@@ -144,17 +91,16 @@ public class SearchableBusLineActivity extends Activity {
 		inflater.inflate(R.menu.menu_search, menu);
 
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+		searchView = (SearchView) menu.findItem(R.id.menu_search)
+				.getActionView();
 		searchView.setSearchableInfo(searchManager
 				.getSearchableInfo(getComponentName()));
-		searchView.setQuery(query,false);
-		//   searchView.setFocusable(false);
-		    searchView.setIconified(false);
-		//    searchView.requestFocusFromTouch();
+		searchView.setQuery(query, false);
+		// searchView.setFocusable(false);
+		searchView.setIconified(false);
+		// searchView.requestFocusFromTouch();
 		return true;
 	}
-
-	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -167,5 +113,36 @@ public class SearchableBusLineActivity extends Activity {
 		default:
 			return false;
 		}
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		query = null == args ? "" : args.getString(SearchManager.QUERY);
+		return new CursorLoader(this, Bus.CONTENT_URI, null, Bus.NAME + " like ?",
+				new String[] { query+"%" }, null);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+		int count = data.getCount();
+		String countString = getResources().getQuantityString(
+				R.plurals.search_results, count, new Object[] { count, query });
+		mTextView.setText(countString);
+		adapter.swapCursor(data);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		adapter.swapCursor(null);
+	}
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		Intent wordIntent = new Intent(getApplicationContext(),
+				StationsActivity.class);
+		Uri data = Uri.withAppendedPath(Bus.CONTENT_URI, String.valueOf(id));
+		wordIntent.setData(data);
+		startActivity(wordIntent);
 	}
 }

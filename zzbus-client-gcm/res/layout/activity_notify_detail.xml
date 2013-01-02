@@ -5,26 +5,23 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/notify_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:textSize="20sp"
-            android:text="compony" />
+    <TextView
+        android:id="@+id/notify_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:textSize="20sp" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line"
-            android:contentDescription="@string/imagedesc" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/line"
+        android:contentDescription="@string/app_name" />
 
-       <TextView
-            android:id="@+id/notify_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="compony_1" />
-      
+    <TextView
+        android:id="@+id/notify_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

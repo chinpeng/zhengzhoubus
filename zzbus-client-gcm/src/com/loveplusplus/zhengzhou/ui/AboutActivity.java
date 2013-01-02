@@ -1,12 +1,10 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import com.loveplusplus.zhengzhou.R;
-import com.loveplusplus.zhengzhou.R.id;
-import com.loveplusplus.zhengzhou.R.layout;
-
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import com.loveplusplus.zhengzhou.R;
 
 public class AboutActivity extends BaseActivity {
 
