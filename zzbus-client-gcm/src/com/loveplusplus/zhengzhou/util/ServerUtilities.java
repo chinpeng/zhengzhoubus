@@ -196,8 +196,9 @@ public final class ServerUtilities {
 	public static String getGps(String lineName,String direction,String sno,String hczd) throws IOException {
 		String url = "http://wap.zhengzhoubus.com/gps.asp";
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("xl", lineName+"路");
+		map.put("xl", lineName);
 		map.put("ud", direction);
+		//map.put("fx", value);
 		map.put("sno", sno);
 		map.put("hczd", hczd);
 		map.put("ref", "4");

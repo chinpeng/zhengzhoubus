@@ -21,4 +21,14 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="textNoDataStyle">
+        <item name="android:background">@drawable/textview_buddle_bg</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+    </style>
+    
 </resources>

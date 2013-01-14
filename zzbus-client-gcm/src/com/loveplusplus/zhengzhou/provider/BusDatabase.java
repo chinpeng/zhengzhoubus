@@ -3,39 +3,32 @@ package com.loveplusplus.zhengzhou.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.loveplusplus.zhengzhou.R;
+import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.provider.BusContract.BusColumns;
 import com.loveplusplus.zhengzhou.provider.BusContract.FavoriteColumns;
-import com.loveplusplus.zhengzhou.provider.BusContract.LineColumns;
-import com.loveplusplus.zhengzhou.provider.BusContract.StationColumns;
 
 public class BusDatabase extends SQLiteOpenHelper {
 
 	private static final String TAG = "BusDatabase";
 	private static final String DATABASE_NAME = "bus.db";
-	private static final int DATABASE_VERSION = 13;
+	private static final int DATABASE_VERSION = 15;
 
 	interface Tables {
 		String BUS = "bus";
-		String STATION = "station";
-		String LINE = "line";
 		String FAVORITE = "favorite";
 	}
 
@@ -46,62 +39,17 @@ public class BusDatabase extends SQLiteOpenHelper {
 		this.context = context;
 	}
 
-	public Cursor getBusMatches(String query, String[] columns) {
-		String selection = BusColumns.NAME + " like ?";
-		String[] selectionArgs = new String[] { query + "%" };
-
-		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-		builder.setTables(Tables.BUS);
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put(BaseColumns._ID, BaseColumns._ID);
-		map.put(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID, BaseColumns._ID
-				+ " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
-		map.put(SearchManager.SUGGEST_COLUMN_TEXT_1, BusColumns.NAME + " AS "
-				+ SearchManager.SUGGEST_COLUMN_TEXT_1);
-		map.put(SearchManager.SUGGEST_COLUMN_TEXT_2, BusColumns.DEFINITION
-				+ " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2);
-		builder.setProjectionMap(map);
-		Cursor cursor = builder.query(getReadableDatabase(), columns,
-				selection, selectionArgs, null, null, null);
-
-		if (cursor == null) {
-			return null;
-		} else if (!cursor.moveToFirst()) {
-			cursor.close();
-			return null;
-		}
-		return cursor;
-
-	}
-
+	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE " + Tables.BUS + "(" + BaseColumns._ID
-				+ "  INTEGER PRIMARY KEY AUTOINCREMENT," + BusColumns.NAME
-				+ "  TEXT NOT NULL," + BusColumns.START_TIME + "  TEXT,"
-				+ BusColumns.END_TIME + "  TEXT," + BusColumns.PRICE
-				+ "  TEXT," + BusColumns.CARD + "  TEXT," + BusColumns.ALIAS
-				+ "  TEXT," + BusColumns.FROM + "  TEXT," + BusColumns.TO
-				+ "  TEXT," + BusColumns.DEFINITION + "  TEXT,"
-				+ BusColumns.COMPANY + "  TEXT)");
-
-		db.execSQL("CREATE TABLE " + Tables.STATION + "(" + BaseColumns._ID
-				+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
-				+ StationColumns.LATITUDE + " TEXT,"
-				+ StationColumns.LONGTITUDE + " TEXT," + StationColumns.NAME
-				+ " TEXT NOT NULL )");
-
-		db.execSQL("CREATE TABLE " + Tables.LINE + "(" + BaseColumns._ID
-				+ " INTEGER PRIMARY KEY AUTOINCREMENT," + LineColumns.BUS_ID
-				+ "  INTEGER," + LineColumns.STATION_ID + "  INTEGER,"
-				+ LineColumns.DIRECT + "  INTEGER," + LineColumns.SNO
-				+ "  INTEGER," + "FOREIGN KEY (" + LineColumns.BUS_ID
-				+ ") REFERENCES " + Tables.BUS + "(" + BaseColumns._ID + "),"
-				+ "FOREIGN KEY (" + LineColumns.STATION_ID + ") REFERENCES "
-				+ Tables.STATION + " (" + BaseColumns._ID + ")," + "UNIQUE ("
-				+ LineColumns.BUS_ID + " , " + LineColumns.STATION_ID + " , "
-				+ LineColumns.DIRECT + " , " + LineColumns.SNO
-				+ ") ON CONFLICT REPLACE)");
+				+ "  INTEGER PRIMARY KEY AUTOINCREMENT," + Bus.CARFARE
+				+ " TEXT," + Bus.DEPT_NAME + " TEXT," + Bus.FIRST_TIME
+				+ " TEXT," + Bus.IS_UP_DOWN + " TEXT," + Bus.LABEL_NO
+				+ " TEXT," + Bus.LATITUDE + " TEXT," + Bus.LINE_NAME + " TEXT,"
+				+ Bus.LONGITUDE + " TEXT," + Bus.STATION_NAME + " TEXT,"
+				+ Bus.YN_USE_IC_A + " TEXT," + Bus.YN_USE_IC_B + " TEXT,"
+				+ Bus.YN_USE_IC_C + " TEXT," + Bus.YN_USE_IC_D + " TEXT)");
 
 		Log.d(TAG, "创建数据库 favorite");
 		db.execSQL("CREATE  TABLE " + Tables.FAVORITE + "(" + BaseColumns._ID
@@ -122,8 +70,6 @@ public class BusDatabase extends SQLiteOpenHelper {
 				try {
 					Log.d(TAG, "加载数据");
 					saveBus(db);
-					saveStation(db);
-					saveLine(db);
 					Log.d(TAG, "加载数据");
 				} catch (IOException e) {
 					Log.e(TAG, " 加载数据异常" + e.getMessage());
@@ -135,80 +81,35 @@ public class BusDatabase extends SQLiteOpenHelper {
 
 	}
 
-	private void saveLine(SQLiteDatabase db) throws IOException, JSONException {
-		List<ContentValues> list = new ArrayList<ContentValues>();
-
-		//String json = ServerUtilities.post(Constants.LINE_URL, null);
-
-		InputStream is = this.context.getResources().openRawResource(R.raw.line);
-		byte[] data = new byte[is.available()];
-		is.read(data);
-		is.close();
-		String json = new String(data);
-		
-		JSONArray array = new JSONArray(json);
-		for (int i = 0; i < array.length(); i++) {
-			JSONObject obj = (JSONObject) array.get(i);
-			ContentValues values = new ContentValues();
-			values.put(BaseColumns._ID, obj.getInt("id"));
-			values.put(LineColumns.BUS_ID, obj.getInt("bus_id"));
-			values.put(LineColumns.DIRECT, obj.getInt("direct"));
-			values.put(LineColumns.SNO, obj.getInt("sno"));
-			values.put(LineColumns.STATION_ID, obj.getInt("station_id"));
-			list.add(values);
-		}
-
-		insertDb(db, list, Tables.LINE);
-	}
-
-	private void saveStation(SQLiteDatabase db) throws IOException,
-			JSONException {
-		List<ContentValues> list = new ArrayList<ContentValues>();
-
-		//String json = ServerUtilities.post(Constants.STATION_URL, null);
-
-		InputStream is = this.context.getResources().openRawResource(R.raw.station);
-		byte[] data = new byte[is.available()];
-		is.read(data);
-		is.close();
-		String json = new String(data);
-		
-		JSONArray array = new JSONArray(json);
-		for (int i = 0; i < array.length(); i++) {
-			JSONObject obj = (JSONObject) array.get(i);
-
-			ContentValues values = new ContentValues();
-			values.put(BaseColumns._ID, obj.getInt("id"));
-			values.put(StationColumns.NAME, obj.getString("name"));
-			list.add(values);
-		}
-
-		insertDb(db, list, Tables.STATION);
-	}
-
 	private void saveBus(SQLiteDatabase db) throws IOException, JSONException {
 		List<ContentValues> list = new ArrayList<ContentValues>();
 
 		// String json = ServerUtilities.post(Constants.BUS_URL, null);
-		
-		InputStream is = this.context.getResources().openRawResource(R.raw.bus);
+
+		InputStream is = this.context.getResources().openRawResource(
+				R.raw.bus_json);
 		byte[] data = new byte[is.available()];
 		is.read(data);
 		is.close();
 		String json = new String(data);
-		
+
 		JSONArray array = new JSONArray(json);
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject obj = (JSONObject) array.get(i);
 			ContentValues values = new ContentValues();
-			values.put(BaseColumns._ID, obj.getInt("id"));
-			values.put(BusColumns.CARD, obj.getString("card"));
-			values.put(BusColumns.COMPANY, obj.getString("company"));
-			values.put(BusColumns.END_TIME, obj.getString("end_time"));
-			values.put(BusColumns.NAME, obj.getString("name"));
-			values.put(BusColumns.PRICE, obj.getString("price"));
-			values.put(BusColumns.START_TIME, obj.getString("start_time"));
-			values.put(BusColumns.DEFINITION, obj.getString("definition"));
+			values.put(BusColumns.CARFARE, obj.getString("carfare"));
+			values.put(BusColumns.DEPT_NAME, obj.getString("dept_name"));
+			values.put(BusColumns.FIRST_TIME, obj.getString("first_time"));
+			values.put(BusColumns.IS_UP_DOWN, obj.getString("is_up_down"));
+			values.put(BusColumns.LABEL_NO, obj.getString("label_no"));
+			values.put(BusColumns.LATITUDE, obj.getString("lat"));
+			values.put(BusColumns.LINE_NAME, obj.getString("line_name"));
+			values.put(BusColumns.LONGITUDE, obj.getString("lng"));
+			values.put(BusColumns.STATION_NAME, obj.getString("station_name"));
+			values.put(BusColumns.YN_USE_IC_A, obj.getString("yn_use_ic_a"));
+			values.put(BusColumns.YN_USE_IC_B, obj.getString("yn_use_ic_b"));
+			values.put(BusColumns.YN_USE_IC_C, obj.getString("yn_use_ic_c"));
+			values.put(BusColumns.YN_USE_IC_D, obj.getString("yn_use_ic_d"));
 
 			list.add(values);
 		}
@@ -238,8 +139,6 @@ public class BusDatabase extends SQLiteOpenHelper {
 		Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 				+ newVersion + ", which will destroy all old data");
 		db.execSQL("DROP TABLE IF EXISTS " + Tables.FAVORITE);
-		db.execSQL("DROP TABLE IF EXISTS " + Tables.LINE);
-		db.execSQL("DROP TABLE IF EXISTS " + Tables.STATION);
 		db.execSQL("DROP TABLE IF EXISTS " + Tables.BUS);
 		onCreate(db);
 	}

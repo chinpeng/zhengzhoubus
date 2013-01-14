@@ -27,6 +27,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,6 +43,7 @@ import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 public class SearchableBusLineActivity extends ListActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
+	private static final String TAG = "SearchableBusLineActivity";
 	private TextView mTextView;
 	private SearchView searchView;
 	private String query;
@@ -57,11 +59,11 @@ public class SearchableBusLineActivity extends ListActivity implements
 		mTextView = (TextView) findViewById(R.id.text);
 
 		adapter = new SimpleCursorAdapter(this, R.layout.bus_search_suggest,
-				null, new String[] { Bus.NAME, Bus.DEFINITION }, new int[] {
-						R.id.bus_name, R.id.bus_definition }, 0);
+				null, new String[] { Bus.LINE_NAME },
+				new int[] { R.id.bus_name }, 0);
 
 		setListAdapter(adapter);
-		getLoaderManager().initLoader(0, null, this);
+
 		handleIntent(getIntent());
 	}
 
@@ -72,12 +74,21 @@ public class SearchableBusLineActivity extends ListActivity implements
 
 	private void handleIntent(Intent intent) {
 
+		Log.d(TAG, intent.toString());
+		Log.d(TAG, intent.getData().toString());
+		Log.d(TAG, intent.getDataString());
+
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
 			Intent wordIntent = new Intent(this, StationsActivity.class);
 			wordIntent.setData(intent.getData());
 			startActivity(wordIntent);
 		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			getLoaderManager().restartLoader(0, intent.getExtras(), this);
+			Loader<Cursor> loader = getLoaderManager().getLoader(0);
+			if (null == loader) {
+				getLoaderManager().initLoader(0, intent.getExtras(), this);
+			} else {
+				getLoaderManager().restartLoader(0, intent.getExtras(), this);
+			}
 		}
 	}
 
@@ -114,15 +125,16 @@ public class SearchableBusLineActivity extends ListActivity implements
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		query = null == args ? "" : args.getString(SearchManager.QUERY);
-		return new CursorLoader(this, Bus.CONTENT_URI, null, Bus.NAME + " like ?",
-				new String[] { query+"%" }, null);
+		return new CursorLoader(this, Bus.CONTENT_URI, null, Bus.LINE_NAME
+				+ " like ?", new String[] { query + "%" }, null);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 		int count = data.getCount();
-		String countString = getResources().getString(R.string.search_results,new Object[] { query,count});
+		String countString = getResources().getString(R.string.search_results,
+				new Object[] { query, count });
 		mTextView.setText(countString);
 		adapter.swapCursor(data);
 	}

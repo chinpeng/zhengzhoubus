@@ -23,8 +23,6 @@ import android.widget.ListView;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
-import com.loveplusplus.zhengzhou.provider.BusContract.Line;
-import com.loveplusplus.zhengzhou.provider.BusContract.Station;
 
 public class StationsActivity extends FragmentActivity {
 
@@ -105,11 +103,12 @@ public class StationsActivity extends FragmentActivity {
 			Cursor cursor = (Cursor) mAdapter.getItem(position);
 
 			String waitStation = cursor.getString(cursor
-					.getColumnIndex(Station.NAME));
-			String direct = cursor
-					.getString(cursor.getColumnIndex(Line.DIRECT));
-			String sno = cursor.getString(cursor.getColumnIndex(Line.SNO));
-			String lineName = cursor.getString(cursor.getColumnIndex(Bus.NAME));
+					.getColumnIndex(Bus.STATION_NAME));
+			String direct = cursor.getString(cursor
+					.getColumnIndex(Bus.IS_UP_DOWN));
+			String sno = cursor.getString(cursor.getColumnIndex(Bus.LABEL_NO));
+			String lineName = cursor.getString(cursor
+					.getColumnIndex(Bus.LINE_NAME));
 
 			Log.d(TAG, waitStation + " " + direct + " " + sno + " " + lineName);
 
@@ -121,13 +120,14 @@ public class StationsActivity extends FragmentActivity {
 			intent.putExtra("hczd", waitStation);
 			startActivity(intent);
 
-			ContentValues values=new ContentValues();
+			ContentValues values = new ContentValues();
 			values.put(Favorite.BUS_NAME, lineName);
 			values.put(Favorite.DIRECT, direct);
 			values.put(Favorite.SNO, sno);
 			values.put(Favorite.STATION_NAME, waitStation);
-			
-			getActivity().getContentResolver().insert(Favorite.CONTENT_URI, values);
+
+			getActivity().getContentResolver().insert(Favorite.CONTENT_URI,
+					values);
 		}
 
 		@Override
@@ -135,7 +135,8 @@ public class StationsActivity extends FragmentActivity {
 			super.onAttach(activity);
 			mAdapter = new SimpleCursorAdapter(activity,
 					R.layout.busline_list_item, null,
-					new String[] { Station.NAME }, new int[] { R.id.sta }, 0);
+					new String[] { Bus.STATION_NAME }, new int[] { R.id.sta },
+					0);
 			setListAdapter(mAdapter);
 
 			Loader<Cursor> loader = getLoaderManager().getLoader(0);
@@ -149,8 +150,9 @@ public class StationsActivity extends FragmentActivity {
 
 		@Override
 		public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
-			return new CursorLoader(getActivity(), getActivity().getIntent()
-					.getData(), null, null,
+			FragmentActivity activity = getActivity();
+			Intent intent = activity.getIntent();
+			return new CursorLoader(activity, intent.getData(), null, null,
 					new String[] { arg1.getString("direct") }, null);
 		}
 
