@@ -16,20 +16,20 @@ public class NotifyDetailActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_notify_detail);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		mTextView = (TextView)findViewById(R.id.notify_content);
-		
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		mTextView = (TextView) findViewById(R.id.notify_content);
+
 		handleIntent(getIntent());
 	}
 
 	private void handleIntent(Intent intent) {
 		Log.d(TAG, intent.toString());
-		if(null!=intent){
-			String title=intent.getStringExtra("title");
-			String content=intent.getStringExtra("content");
-			String url=intent.getStringExtra("url");
-			
-			mTextView.setText(title+"/n"+content+"/n"+url);
+		if (null != intent) {
+			String title = intent.getStringExtra("title");
+			String content = intent.getStringExtra("content");
+			String url = intent.getStringExtra("url");
+
+			mTextView.setText(title + "/n" + content + "/n" + url);
 		}
 	}
 
@@ -37,7 +37,5 @@ public class NotifyDetailActivity extends BaseActivity {
 	protected void onNewIntent(Intent intent) {
 		handleIntent(intent);
 	}
-	
-	
-	
+
 }

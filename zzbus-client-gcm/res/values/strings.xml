@@ -25,12 +25,8 @@
     <string name="search_hint">请输入公交线路</string>
     
     <string name="search_instructions">点击图标开始查询</string>
-
     <string name="search_results">你搜索的是:\"%1$s\",有%2$d条结果: </string>
 
-    <string name="no_data">暂无收藏记录</string>
-    <string name="bus_tips_1">目前提供公交集团在线200余条线路实时到站信息</string>
-    <string name="bus_tips_2">更多线路不断增加中&#8230;</string>
     <string name="map">长按地图可以显示附近站点</string>
     <string name="waiting">正在查询</string>
     <string name="error_config">Please set the %1$s constant and recompile the app.</string>

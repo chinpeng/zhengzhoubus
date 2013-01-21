@@ -1,33 +1,37 @@
 package com.loveplusplus.zhengzhou.ui;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import android.app.ActionBar;
-import android.app.ListActivity;
-import android.app.LoaderManager;
+import android.annotation.TargetApi;
 import android.app.SearchManager;
-import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
-import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.ShareActionProvider;
-import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.ShareActionProvider;
 import com.google.android.gcm.GCMRegistrar;
 import com.loveplusplus.zhengzhou.BuildConfig;
 import com.loveplusplus.zhengzhou.Config;
@@ -35,8 +39,9 @@ import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 import com.loveplusplus.zhengzhou.util.LogUtils;
 import com.loveplusplus.zhengzhou.util.ServerUtilities;
+import com.loveplusplus.zhengzhou.util.UIUtils;
 
-public class HomeActivity extends ListActivity implements
+public class HomeActivity extends BaseActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String TAG = LogUtils.makeLogTag(HomeActivity.class);
@@ -44,30 +49,31 @@ public class HomeActivity extends ListActivity implements
 	private ShareActionProvider mShareActionProvider;
 	private SimpleCursorAdapter mAdapter;
 	private AsyncTask<Void, Void, Void> mGCMRegisterTask;
-	private ListView listView;
-	protected ArrayList<Long> checkedIds = new ArrayList<Long>();
+
+	private ListView mListView;
+
+	private TextView mEmptyView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setHomeButtonEnabled(false);
 		mAdapter = new SimpleCursorAdapter(this,
-				android.R.layout.simple_list_item_activated_2, null,
+				android.R.layout.simple_list_item_2, null,
 				new String[] { Favorite.BUS_NAME, Favorite.STATION_NAME },
 				new int[] { android.R.id.text1, android.R.id.text2, }, 0);
-		setListAdapter(mAdapter);
 
-		getLoaderManager().initLoader(0, null, this);
+		getSupportLoaderManager().initLoader(0, null, this);
 
 		getContentResolver().registerContentObserver(Favorite.CONTENT_URI,
 				true, new ContentObserver(new Handler()) {
 					@Override
 					public void onChange(boolean selfChange) {
 
-						Loader<Cursor> loader1 = getLoaderManager()
+						Loader<Cursor> loader1 = getSupportLoaderManager()
 								.getLoader(0);
 						if (loader1 != null) {
 							loader1.forceLoad();
@@ -75,84 +81,82 @@ public class HomeActivity extends ListActivity implements
 					}
 				});
 
-		registerGCMClient();
-
-		registerChoiceMode();
+		
+		
+		
+		setupView();
+		
+		
+		try {
+			registerGCMClient();
+		} catch (Exception e) {
+			Log.d(TAG, "gcm...");
+		}
 	}
 
-	private void registerChoiceMode() {
+	private void setupView() {
 
-		listView = getListView();
-		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-		listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
+		mListView = (ListView) findViewById(R.id.list);
+		mEmptyView = (TextView) findViewById(R.id.empty);
+		mListView.setEmptyView(mEmptyView);
+		mListView.setAdapter(mAdapter);
 
-			@Override
-			public void onItemCheckedStateChanged(ActionMode mode,
-					int position, long id, boolean checked) {
-				// Here you can do something when items are
-				// selected/de-selected,
-				// such as update the title in the CAB
-
-				if (checked) {
-					checkedIds.add(id);
-				} else {
-					Iterator<Long> iter = checkedIds.iterator();
-					while (iter.hasNext()) {
-						long stored = (Long) iter.next();
-						if (stored == id) {
-							iter.remove();
-						}
-					}
-				}
-
-				mode.setTitle("你选择了" + checkedIds.size() + "条目");
-			}
+		mListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-				// Respond to clicks on the actions in the CAB
-				switch (item.getItemId()) {
-				case R.id.menu_delete:
-					deleteSelectedItems();
-					mode.finish(); // Action picked, so close the CAB
-					return true;
-				default:
-					return false;
-				}
-			}
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Cursor cursor = (Cursor) mAdapter.getItem(position);
+				String waitStation = cursor.getString(cursor
+						.getColumnIndex(Favorite.STATION_NAME));
+				String direct = cursor.getString(cursor
+						.getColumnIndex(Favorite.DIRECT));
+				String sno = cursor.getString(cursor
+						.getColumnIndex(Favorite.SNO));
+				String lineName = cursor.getString(cursor
+						.getColumnIndex(Favorite.BUS_NAME));
 
-			@Override
-			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-				// Inflate the menu for the CAB
-				MenuInflater inflater = mode.getMenuInflater();
-				inflater.inflate(R.menu.context, menu);
-				return true;
-			}
+				LogUtils.LOGD(TAG, waitStation + " " + direct + " " + sno + " "
+						+ lineName);
 
-			@Override
-			public void onDestroyActionMode(ActionMode mode) {
-				// Here you can make any necessary updates to the activity when
-				// the CAB is removed. By default, selected items are
-				// deselected/unchecked.
-			}
+				Intent intent = new Intent(HomeActivity.this, GpsWaitingActivity.class);
 
-			@Override
-			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-				// Here you can perform updates to the CAB due to
-				// an invalidate() request
-				return false;
+				intent.putExtra("lineName", lineName);
+				intent.putExtra("ud", direct);
+				intent.putExtra("sno", sno);
+				intent.putExtra("hczd", waitStation);
+				startActivity(intent);
 			}
 		});
 
+		registerForContextMenu(mListView);
+
 	}
 
-	protected void deleteSelectedItems() {
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		getMenuInflater().inflate(R.menu.delete, menu);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(android.view.MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	    switch (item.getItemId()) {
+	        case R.id.menu_delete:
+	        	deleteSelectedItem(info.id);
+	            return true;
+	        default:
+	            return super.onContextItemSelected(item);
+	    }
+	}
+	
+	protected void deleteSelectedItem(long id) {
 
-		for (long id : checkedIds) {
 			getContentResolver().delete(
 					Favorite.buildFavoriteUri(String.valueOf(id)),
 					Favorite._ID + "=?", new String[] { String.valueOf(id) });
-		}
 
 	}
 
@@ -224,27 +228,39 @@ public class HomeActivity extends ListActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_home, menu);
+		super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getSupportMenuInflater();
+		// 设置搜索
+		inflater.inflate(R.menu.search, menu);
+		setupSearchMenuItem(menu);
 
 		// 设置分享
-		mShareActionProvider = (ShareActionProvider) menu.findItem(
-				R.id.menu_item_share).getActionProvider();
+		inflater.inflate(R.menu.share, menu);
+		// mShareActionProvider = (ShareActionProvider) menu.findItem(
+		// R.id.menu_share).getActionProvider();
+		//
+		// mShareActionProvider
+		// .setShareHistoryFileName("custom_share_history.xml");
+		//
+		// if (mShareActionProvider != null) {
+		// mShareActionProvider.setShareIntent(getDefaultShareIntent());
+		// }
 
-		mShareActionProvider
-				.setShareHistoryFileName("custom_share_history.xml");
-
-		if (mShareActionProvider != null) {
-			mShareActionProvider.setShareIntent(getDefaultShareIntent());
-		}
-		// 设置搜索
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchView searchView = (SearchView) menu.findItem(
-				R.id.menu_item_search).getActionView();
-		searchView.setSearchableInfo(searchManager
-				.getSearchableInfo(getComponentName()));
-		searchView.setIconifiedByDefault(true);
+		inflater.inflate(R.menu.setting, menu);
 		return true;
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void setupSearchMenuItem(Menu menu) {
+		MenuItem searchItem = menu.findItem(R.id.menu_search);
+		if (searchItem != null && UIUtils.hasHoneycomb()) {
+			SearchView searchView = (SearchView) searchItem.getActionView();
+			if (searchView != null) {
+				SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+				searchView.setSearchableInfo(searchManager
+						.getSearchableInfo(getComponentName()));
+			}
+		}
 	}
 
 	private Intent getDefaultShareIntent() {
@@ -260,17 +276,20 @@ public class HomeActivity extends ListActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-		case R.id.menu_item_about:
+		case R.id.menu_about:
 			startActivity(new Intent(this, AboutActivity.class));
 			return true;
-		case R.id.menu_item_settings:
-			startActivity(new Intent(this, SettingsActivity.class));
-			return true;
-
-		default:
-			return super.onOptionsItemSelected(item);
+			// case R.id.menu_settings:
+			// startActivity(new Intent(this, SettingsActivity.class));
+			// return true;
+		case R.id.menu_search:
+			if (!UIUtils.hasHoneycomb()) {
+				startSearch(null, false, Bundle.EMPTY, false);
+				return true;
+			}
+			break;
 		}
-
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -289,27 +308,4 @@ public class HomeActivity extends ListActivity implements
 		mAdapter.swapCursor(null);
 	}
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-
-		Cursor cursor = (Cursor) mAdapter.getItem(position);
-		String waitStation = cursor.getString(cursor
-				.getColumnIndex(Favorite.STATION_NAME));
-		String direct = cursor
-				.getString(cursor.getColumnIndex(Favorite.DIRECT));
-		String sno = cursor.getString(cursor.getColumnIndex(Favorite.SNO));
-		String lineName = cursor.getString(cursor
-				.getColumnIndex(Favorite.BUS_NAME));
-
-		LogUtils.LOGD(TAG, waitStation + " " + direct + " " + sno + " "
-				+ lineName);
-
-		Intent intent = new Intent(this, GpsWaitingActivity.class);
-
-		intent.putExtra("lineName", lineName);
-		intent.putExtra("ud", direct);
-		intent.putExtra("sno", sno);
-		intent.putExtra("hczd", waitStation);
-		startActivity(intent);
-	}
 }

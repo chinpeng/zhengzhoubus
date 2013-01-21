@@ -1,7 +1,6 @@
 package com.loveplusplus.zhengzhou.provider;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +15,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.provider.BusContract.BusColumns;
 import com.loveplusplus.zhengzhou.provider.BusContract.FavoriteColumns;
+import com.loveplusplus.zhengzhou.util.AssetsUtil;
 
 public class BusDatabase extends SQLiteOpenHelper {
 
@@ -39,7 +38,6 @@ public class BusDatabase extends SQLiteOpenHelper {
 		this.context = context;
 	}
 
-	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE " + Tables.BUS + "(" + BaseColumns._ID
@@ -82,39 +80,40 @@ public class BusDatabase extends SQLiteOpenHelper {
 	}
 
 	private void saveBus(SQLiteDatabase db) throws IOException, JSONException {
-		List<ContentValues> list = new ArrayList<ContentValues>();
 
-		// String json = ServerUtilities.post(Constants.BUS_URL, null);
+		// 获取所有的公交线路名称
+		List<String> busNameList = AssetsUtil.loadBusList(context);
 
-		InputStream is = this.context.getResources().openRawResource(
-				R.raw.bus_json);
-		byte[] data = new byte[is.available()];
-		is.read(data);
-		is.close();
-		String json = new String(data);
+		List<ContentValues> list =null;
+		for (String name : busNameList) {
 
-		JSONArray array = new JSONArray(json);
-		for (int i = 0; i < array.length(); i++) {
-			JSONObject obj = (JSONObject) array.get(i);
-			ContentValues values = new ContentValues();
-			values.put(BusColumns.CARFARE, obj.getString("carfare"));
-			values.put(BusColumns.DEPT_NAME, obj.getString("dept_name"));
-			values.put(BusColumns.FIRST_TIME, obj.getString("first_time"));
-			values.put(BusColumns.IS_UP_DOWN, obj.getString("is_up_down"));
-			values.put(BusColumns.LABEL_NO, obj.getString("label_no"));
-			values.put(BusColumns.LATITUDE, obj.getString("lat"));
-			values.put(BusColumns.LINE_NAME, obj.getString("line_name"));
-			values.put(BusColumns.LONGITUDE, obj.getString("lng"));
-			values.put(BusColumns.STATION_NAME, obj.getString("station_name"));
-			values.put(BusColumns.YN_USE_IC_A, obj.getString("yn_use_ic_a"));
-			values.put(BusColumns.YN_USE_IC_B, obj.getString("yn_use_ic_b"));
-			values.put(BusColumns.YN_USE_IC_C, obj.getString("yn_use_ic_c"));
-			values.put(BusColumns.YN_USE_IC_D, obj.getString("yn_use_ic_d"));
+			list= new ArrayList<ContentValues>();
+			// 根据公交线路名称，获取该线路的json数据，解析json,并插入数据库
+			String json = AssetsUtil.loadJson(name, context);
+			JSONArray array = new JSONArray(json);
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject obj = (JSONObject) array.get(i);
+				ContentValues values = new ContentValues();
+				values.put(BusColumns.CARFARE, obj.getString("carfare"));
+				values.put(BusColumns.DEPT_NAME, obj.getString("dept_name"));
+				values.put(BusColumns.FIRST_TIME, obj.getString("first_time"));
+				values.put(BusColumns.IS_UP_DOWN, obj.getString("is_up_down"));
+				values.put(BusColumns.LABEL_NO, obj.getString("label_no"));
+				values.put(BusColumns.LATITUDE, obj.getString("lat"));
+				values.put(BusColumns.LINE_NAME, obj.getString("line_name"));
+				values.put(BusColumns.LONGITUDE, obj.getString("lng"));
+				values.put(BusColumns.STATION_NAME,
+						obj.getString("station_name"));
+				values.put(BusColumns.YN_USE_IC_A, obj.getString("yn_use_ic_a"));
+				values.put(BusColumns.YN_USE_IC_B, obj.getString("yn_use_ic_b"));
+				values.put(BusColumns.YN_USE_IC_C, obj.getString("yn_use_ic_c"));
+				values.put(BusColumns.YN_USE_IC_D, obj.getString("yn_use_ic_d"));
 
-			list.add(values);
+				list.add(values);
+			}
+
+			insertDb(db, list, Tables.BUS);
 		}
-
-		insertDb(db, list, Tables.BUS);
 	}
 
 	/**

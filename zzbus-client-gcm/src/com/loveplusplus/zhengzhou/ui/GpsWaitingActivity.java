@@ -1,22 +1,21 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.io.TaskResultReceiver;
 import com.loveplusplus.zhengzhou.io.TaskService;
 
-public class GpsWaitingActivity extends Activity implements
+public class GpsWaitingActivity extends BaseActivity implements
 		TaskResultReceiver.Receiver {
 
 	private ProgressDialog progressDialog;
@@ -30,7 +29,7 @@ public class GpsWaitingActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.gps_waiting);
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		lineName = (TextView) findViewById(R.id.line_name);
 		lineDirect = (TextView) findViewById(R.id.line_direct);
@@ -79,8 +78,8 @@ public class GpsWaitingActivity extends Activity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_refresh, menu);
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.refresh, menu);
 		return true;
 	}
 

@@ -1,23 +1,23 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.view.MenuItem;
+import android.support.v4.app.NavUtils;
 
-public abstract class BaseActivity extends Activity {
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
+
+public abstract class BaseActivity extends SherlockFragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			 Intent intent = new Intent(this, HomeActivity.class);
-             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-             startActivity(intent);
+			if (this instanceof HomeActivity) {
+				return false;
+			}
+
+			NavUtils.navigateUpFromSameTask(this);
 			return true;
-
-		default:
-			return super.onOptionsItemSelected(item);
 		}
-
+		return super.onOptionsItemSelected(item);
 	}
 }

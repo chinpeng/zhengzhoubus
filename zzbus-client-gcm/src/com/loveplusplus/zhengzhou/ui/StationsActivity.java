@@ -46,7 +46,7 @@ public class StationsActivity extends FragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_stations, menu);
+		getMenuInflater().inflate(R.menu.setting, menu);
 		return true;
 	}
 

@@ -1,0 +1,6 @@
+[{label_no:"1",is_up_down:"0",line_name:"621路",station_name:"富士康K区站",lng:"113840476",lat:"34564819",carfare:"1.00",first_time:"07:30-19:30",dept_name:"四公司",yn_use_ic_a:"Y",yn_use_ic_b:"Y",yn_use_ic_c:"Y",yn_use_ic_d:"N"},
+{label_no:"2",is_up_down:"0",line_name:"621路",station_name:"富士康E区站",lng:"113857406",lat:"34563628",carfare:"1.00",first_time:"07:30-19:30",dept_name:"四公司",yn_use_ic_a:"Y",yn_use_ic_b:"Y",yn_use_ic_c:"Y",yn_use_ic_d:"N"},
+{label_no:"3",is_up_down:"0",line_name:"621路",station_name:"锦绣枣园小区站",lng:"113873411",lat:"34561119",carfare:"1.00",first_time:"07:30-19:30",dept_name:"四公司",yn_use_ic_a:"Y",yn_use_ic_b:"Y",yn_use_ic_c:"Y",yn_use_ic_d:"N"},
+{label_no:"1",is_up_down:"1",line_name:"621路",station_name:"锦绣枣园小区站",lng:"113873243",lat:"34561170",carfare:"1.00",first_time:"07:30-19:30",dept_name:"四公司",yn_use_ic_a:"Y",yn_use_ic_b:"Y",yn_use_ic_c:"Y",yn_use_ic_d:"N"},
+{label_no:"2",is_up_down:"1",line_name:"621路",station_name:"富士康E区站",lng:"113857482",lat:"34563683",carfare:"1.00",first_time:"07:30-19:30",dept_name:"四公司",yn_use_ic_a:"Y",yn_use_ic_b:"Y",yn_use_ic_c:"Y",yn_use_ic_d:"N"},
+{label_no:"3",is_up_down:"1",line_name:"621路",station_name:"富士康K区站",lng:"113840347",lat:"34564634",carfare:"1.00",first_time:"07:30-19:30",dept_name:"四公司",yn_use_ic_a:"Y",yn_use_ic_b:"Y",yn_use_ic_c:"Y",yn_use_ic_d:"N"}]
