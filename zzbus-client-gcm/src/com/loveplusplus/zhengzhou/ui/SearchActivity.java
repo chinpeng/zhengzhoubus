@@ -20,12 +20,16 @@ import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -35,15 +39,14 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
+import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 import com.loveplusplus.zhengzhou.util.ReflectionUtils;
 import com.loveplusplus.zhengzhou.util.UIUtils;
 
 public class SearchActivity extends BaseActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
-	private static final String TAG = "SearchableBusLineActivity";
 	private TextView mTextView;
-	private SearchView searchView;
 	private String query;
 	private SimpleCursorAdapter adapter;
 	private ListView mListView;
@@ -58,11 +61,28 @@ public class SearchActivity extends BaseActivity implements
 		mTextView = (TextView) findViewById(R.id.text);
 
 		adapter = new SimpleCursorAdapter(this, R.layout.bus_search_suggest,
-				null, new String[] { Bus.LINE_NAME },
-				new int[] { R.id.bus_name }, 0);
+				null, new String[] { Bus.LINE_NAME, "to_station" }, new int[] {
+						R.id.bus_name, R.id.bus_definition }, 0);
 
 		mListView = (ListView) findViewById(android.R.id.list);
 		mListView.setAdapter(adapter);
+
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Cursor cursor = (Cursor) adapter.getItem(position);
+				String lineName = cursor.getString(cursor
+						.getColumnIndex(Bus.LINE_NAME));
+
+				Intent wordIntent = new Intent(getApplicationContext(),
+						StationsActivity.class);
+				Uri data = Uri.withAppendedPath(Bus.CONTENT_URI, lineName);
+				wordIntent.setData(data);
+				startActivity(wordIntent);
+			}
+		});
 
 	}
 
@@ -75,7 +95,7 @@ public class SearchActivity extends BaseActivity implements
 	@Override
 	public void onNewIntent(Intent intent) {
 		setIntent(intent);
-		String query = intent.getStringExtra(SearchManager.QUERY);
+		query = intent.getStringExtra(SearchManager.QUERY);
 
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
 			Intent wordIntent = new Intent(this, StationsActivity.class);
@@ -92,7 +112,6 @@ public class SearchActivity extends BaseActivity implements
 			}
 		}
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -167,10 +186,9 @@ public class SearchActivity extends BaseActivity implements
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 		int count = data.getCount();
-		// String countString =
-		// getResources().getQuantityString(R.string.search_results, query,
-		// count);
-		// mTextView.setText(countString);
+		String countString = getResources().getString(R.string.search_results,
+				query, count);
+		mTextView.setText(countString);
 		adapter.swapCursor(data);
 	}
 
@@ -179,13 +197,4 @@ public class SearchActivity extends BaseActivity implements
 		adapter.swapCursor(null);
 	}
 
-	// @Override
-	// protected void onListItemClick(ListView l, View v, int position, long id)
-	// {
-	// Intent wordIntent = new Intent(getApplicationContext(),
-	// StationsActivity.class);
-	// Uri data = Uri.withAppendedPath(Bus.CONTENT_URI, String.valueOf(id));
-	// wordIntent.setData(data);
-	// startActivity(wordIntent);
-	// }
 }

@@ -1,7 +1,5 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import java.util.ArrayList;
-
 import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.Intent;
@@ -46,7 +44,6 @@ public class HomeActivity extends BaseActivity implements
 
 	private static final String TAG = LogUtils.makeLogTag(HomeActivity.class);
 
-	private ShareActionProvider mShareActionProvider;
 	private SimpleCursorAdapter mAdapter;
 	private AsyncTask<Void, Void, Void> mGCMRegisterTask;
 
@@ -236,16 +233,18 @@ public class HomeActivity extends BaseActivity implements
 
 		// 设置分享
 		inflater.inflate(R.menu.share, menu);
-		// mShareActionProvider = (ShareActionProvider) menu.findItem(
-		// R.id.menu_share).getActionProvider();
-		//
-		// mShareActionProvider
-		// .setShareHistoryFileName("custom_share_history.xml");
-		//
-		// if (mShareActionProvider != null) {
-		// mShareActionProvider.setShareIntent(getDefaultShareIntent());
-		// }
+		MenuItem menuItem = menu.findItem(R.id.menu_share);
+		ShareActionProvider mShareActionProvider =  (ShareActionProvider) menuItem.getActionProvider();  //line 387
 
+	    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+	    shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+	    shareIntent.setType("text/plain");
+
+	    shareIntent.putExtra(Intent.EXTRA_TEXT,
+				getResources().getString(R.string.share_content));
+
+	    mShareActionProvider.setShareIntent(shareIntent);
+	    
 		inflater.inflate(R.menu.setting, menu);
 		return true;
 	}
@@ -263,14 +262,6 @@ public class HomeActivity extends BaseActivity implements
 		}
 	}
 
-	private Intent getDefaultShareIntent() {
-		Intent shareIntent = new Intent();
-		shareIntent.setAction(Intent.ACTION_SEND);
-		shareIntent.putExtra(Intent.EXTRA_TEXT,
-				getResources().getString(R.string.share_content));
-		shareIntent.setType("text/plain");
-		return shareIntent;
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -43,11 +43,12 @@ public class BusDatabase extends SQLiteOpenHelper {
 		db.execSQL("CREATE TABLE " + Tables.BUS + "(" + BaseColumns._ID
 				+ "  INTEGER PRIMARY KEY AUTOINCREMENT," + Bus.CARFARE
 				+ " TEXT," + Bus.DEPT_NAME + " TEXT," + Bus.FIRST_TIME
-				+ " TEXT," + Bus.IS_UP_DOWN + " TEXT," + Bus.LABEL_NO
-				+ " TEXT," + Bus.LATITUDE + " TEXT," + Bus.LINE_NAME + " TEXT,"
-				+ Bus.LONGITUDE + " TEXT," + Bus.STATION_NAME + " TEXT,"
-				+ Bus.YN_USE_IC_A + " TEXT," + Bus.YN_USE_IC_B + " TEXT,"
-				+ Bus.YN_USE_IC_C + " TEXT," + Bus.YN_USE_IC_D + " TEXT)");
+				+ " TEXT," + Bus.IS_UP_DOWN + " INTEGER," + Bus.LABEL_NO
+				+ " INTEGER," + Bus.LATITUDE + " TEXT," + Bus.LINE_NAME
+				+ " TEXT," + Bus.LONGITUDE + " TEXT," + Bus.STATION_NAME
+				+ " TEXT," + Bus.YN_USE_IC_A + " TEXT," + Bus.YN_USE_IC_B
+				+ " TEXT," + Bus.YN_USE_IC_C + " TEXT," + Bus.YN_USE_IC_D
+				+ " TEXT)");
 
 		Log.d(TAG, "创建数据库 favorite");
 		db.execSQL("CREATE  TABLE " + Tables.FAVORITE + "(" + BaseColumns._ID
@@ -84,10 +85,10 @@ public class BusDatabase extends SQLiteOpenHelper {
 		// 获取所有的公交线路名称
 		List<String> busNameList = AssetsUtil.loadBusList(context);
 
-		List<ContentValues> list =null;
+		List<ContentValues> list = null;
 		for (String name : busNameList) {
 
-			list= new ArrayList<ContentValues>();
+			list = new ArrayList<ContentValues>();
 			// 根据公交线路名称，获取该线路的json数据，解析json,并插入数据库
 			String json = AssetsUtil.loadJson(name, context);
 			JSONArray array = new JSONArray(json);

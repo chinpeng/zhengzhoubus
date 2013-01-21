@@ -61,12 +61,12 @@ public class GpsWaitingActivity extends BaseActivity implements
 			break;
 		case TaskService.STATUS_FINISHED:
 			progressDialog.dismiss();
-			String response=resultData.getString("response");
+			String response = resultData.getString("response");
 			String[] result = response.split("\n");
 			lineName.setText(result[0]);
 			lineDirect.setText(result[1]);
 			lineWaitStation.setText(result[2]);
-			lineWaitInfo.setText(result[3]+result[4]+result[5]);
+			lineWaitInfo.setText(result[3] + result[4] + result[5]);
 			break;
 		case TaskService.STATUS_ERROR:
 			progressDialog.dismiss();
@@ -86,11 +86,6 @@ public class GpsWaitingActivity extends BaseActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			Intent intent = new Intent(this, HomeActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
-			return true;
 		case R.id.menu_refresh:
 			refresh();
 			return true;

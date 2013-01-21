@@ -16,7 +16,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
 
@@ -24,7 +23,7 @@ import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 
-public class StationsActivity extends FragmentActivity {
+public class StationsActivity extends BaseActivity {
 
 	public static final String TAG = "StationsActivity";
 
@@ -44,11 +43,7 @@ public class StationsActivity extends FragmentActivity {
 
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.setting, menu);
-		return true;
-	}
+	
 
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -134,8 +129,8 @@ public class StationsActivity extends FragmentActivity {
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
 			mAdapter = new SimpleCursorAdapter(activity,
-					R.layout.busline_list_item, null,
-					new String[] { Bus.STATION_NAME }, new int[] { R.id.sta },
+					android.R.layout.simple_list_item_1, null,
+					new String[] {Bus.STATION_NAME }, new int[] { android.R.id.text1 },
 					0);
 			setListAdapter(mAdapter);
 
@@ -158,6 +153,9 @@ public class StationsActivity extends FragmentActivity {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+			while(data.moveToNext()){
+				System.out.println(data.getInt(0)+":"+data.getInt(2)+"=="+data.getInt(4));
+			}
 			mAdapter.swapCursor(data);
 		}
 

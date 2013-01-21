@@ -81,8 +81,8 @@ public class BusProvider extends ContentProvider {
 	private Cursor getBusList(String query) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT _id,");
-		sb.append("line_name AS  suggest_text_1,");
-		sb.append("'开往'||station_name AS  suggest_text_2");
+		sb.append("line_name ,");
+		sb.append("'开往'||station_name AS  to_station");
 		sb.append(" FROM bus");
 		sb.append(" WHERE ");
 		sb.append(" is_up_down=0 AND ");
@@ -110,7 +110,7 @@ public class BusProvider extends ContentProvider {
 		sb.append(" FROM bus");
 		sb.append(" WHERE ");
 		sb.append(" is_up_down=? AND ");
-		sb.append(" line_name=? order by label_no asc");
+		sb.append(" line_name=? order by label_no");
 		return queryBySQL(sb.toString(), new String[] { direct, lineName });
 	}
 
