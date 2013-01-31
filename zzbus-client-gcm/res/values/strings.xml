@@ -24,8 +24,6 @@
     <string name="search_instructions">点击图标开始查询</string>
     <string name="search_results">你搜索的是:\"%1$s\",有%2$d条结果: </string>
 
-    <string name="map">长按地图可以显示附近站点</string>
-    <string name="gcm_deleted">From GCM: server deleted %1$d pending messages!</string>
     <string name="server_registering">Trying (attempt %1$d/%2$d) to register device on Demo Server.</string>
     <string name="server_registered">From Demo Server: successfully added device!</string>
     <string name="server_unregistered">From Demo Server: successfully removed device!</string>

@@ -35,15 +35,14 @@ import com.loveplusplus.zhengzhou.BuildConfig;
 import com.loveplusplus.zhengzhou.Config;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
-import com.loveplusplus.zhengzhou.util.LogUtils;
 import com.loveplusplus.zhengzhou.util.ServerUtilities;
 import com.loveplusplus.zhengzhou.util.UIUtils;
 
 public class HomeActivity extends BaseActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
-	private static final String TAG = LogUtils.makeLogTag(HomeActivity.class);
 
+	private static final String TAG = "HomeActivity";
 	private SimpleCursorAdapter mAdapter;
 	private AsyncTask<Void, Void, Void> mGCMRegisterTask;
 
@@ -113,8 +112,6 @@ public class HomeActivity extends BaseActivity implements
 				String lineName = cursor.getString(cursor
 						.getColumnIndex(Favorite.BUS_NAME));
 
-				LogUtils.LOGD(TAG, waitStation + " " + direct + " " + sno + " "
-						+ lineName);
 
 				Intent intent = new Intent(HomeActivity.this, GpsWaitingActivity.class);
 
@@ -174,7 +171,6 @@ public class HomeActivity extends BaseActivity implements
 			// Device is already registered on GCM, check server.
 			if (GCMRegistrar.isRegisteredOnServer(this)) {
 				// Skips registration
-				LogUtils.LOGI(TAG, "Already registered on the GCM server");
 
 			} else {
 				// Try to register again, but not on the UI thread.
@@ -220,7 +216,7 @@ public class HomeActivity extends BaseActivity implements
 		try {
 			GCMRegistrar.onDestroy(this);
 		} catch (Exception e) {
-			LogUtils.LOGW(TAG, "GCM unregistration error", e);
+			Log.e(TAG, "GCM unregistration error", e);
 		}
 	}
 
@@ -272,9 +268,6 @@ public class HomeActivity extends BaseActivity implements
 		case R.id.menu_about:
 			startActivity(new Intent(this, AboutActivity.class));
 			return true;
-			// case R.id.menu_settings:
-			// startActivity(new Intent(this, SettingsActivity.class));
-			// return true;
 		case R.id.menu_search:
 			if (!UIUtils.hasHoneycomb()) {
 				startSearch(null, false, Bundle.EMPTY, false);

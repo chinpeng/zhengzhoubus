@@ -6,13 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.util.Log;
 
 public class AssetsUtil {
 
-	private static final String TAG = "AssetsUtil";
 
 	public static String loadJson(String name, Context context)
 			throws IOException {
@@ -23,8 +23,7 @@ public class AssetsUtil {
 		sb.append(".json");
 
 		String fileName = sb.toString();
-		Log.d(TAG, "---------->" + fileName);
-		InputStream is = context.getAssets().open(fileName.toLowerCase());
+		InputStream is = context.getAssets().open(fileName.toLowerCase(Locale.CHINA));
 
 		// 下一步可以把字符串进行加密
 		return makeContent(is);
