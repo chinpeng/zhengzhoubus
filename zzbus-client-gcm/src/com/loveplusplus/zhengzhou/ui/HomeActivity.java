@@ -87,7 +87,7 @@ public class HomeActivity extends BaseActivity implements
 		try {
 			registerGCMClient();
 		} catch (Exception e) {
-			Log.d(TAG, "gcm...");
+			Log.d(TAG, "gcm..."+e.getMessage());
 		}
 	}
 
@@ -158,6 +158,7 @@ public class HomeActivity extends BaseActivity implements
 	}
 
 	private void registerGCMClient() {
+		
 		GCMRegistrar.checkDevice(this);
 		if (BuildConfig.DEBUG) {
 			GCMRegistrar.checkManifest(this);
@@ -167,7 +168,7 @@ public class HomeActivity extends BaseActivity implements
 
 		if (TextUtils.isEmpty(regId)) {
 			// Automatically registers application on startup.
-			GCMRegistrar.register(this, Config.GCM_SENDER_ID);
+			GCMRegistrar.register(this, Config.SENDER_ID);
 
 		} else {
 			// Device is already registered on GCM, check server.
@@ -245,7 +246,8 @@ public class HomeActivity extends BaseActivity implements
 
 	    mShareActionProvider.setShareIntent(shareIntent);
 	    
-		inflater.inflate(R.menu.setting, menu);
+		//inflater.inflate(R.menu.setting, menu);
+		inflater.inflate(R.menu.about, menu);
 		return true;
 	}
 

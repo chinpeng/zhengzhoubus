@@ -3,15 +3,17 @@ package com.loveplusplus.zhengzhou;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
+import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.ui.NotifyDetailActivity;
-import com.loveplusplus.zhengzhou.util.Constants;
 import com.loveplusplus.zhengzhou.util.ServerUtilities;
 
 /**
@@ -22,7 +24,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private static final String TAG = "GCMIntentService";
 
 	public GCMIntentService() {
-		super(Constants.SENDER_ID);
+		super(Config.SENDER_ID);
 	}
 
 	@Override
@@ -49,21 +51,55 @@ public class GCMIntentService extends GCMBaseIntentService {
 	protected void onMessage(Context context, Intent intent) {
 		Log.i(TAG, "Received message");
 		Bundle extras = intent.getExtras();
-		Log.d(TAG, extras.toString());
-		// String message = getString(R.string.gcm_message);
-		// displayMessage(context, message);
-		// notifies user
+		int msgCode = Integer.parseInt(extras.getString("msg_code"));
+		
+		
+		switch (msgCode) {
+		case 1000:
+			insert(extras);
+			break;
+		case 1001:
+			delete(extras);
+			break;
+		default:
+			generateNotification(context, extras);
+		}
 
-		generateNotification(context, extras);
+		
+	}
+
+	private void delete(Bundle extras) {
+		String uri = extras.getString("uri");
+		String where=extras.getString("where");
+		String selection=extras.getString("selection");
+		getContentResolver().delete(Uri.parse(uri), where, new String[]{selection});		
+	}
+	
+	private void insert(Bundle extras) {
+		String uri = extras.getString("uri");
+		ContentValues values=new ContentValues();
+		values.put(Bus.ALIAS, extras.getString("alias"));
+		values.put(Bus.CARFARE, extras.getString("carfare"));
+		values.put(Bus.DEPT_NAME, extras.getString("dept_name"));
+		values.put(Bus.FIRST_TIME, extras.getString("first_time"));
+		values.put(Bus.IS_UP_DOWN, extras.getString("is_up_down"));
+		values.put(Bus.LABEL_NO, extras.getString("label_no"));
+		values.put(Bus.LATITUDE, extras.getString("lat"));
+		values.put(Bus.LINE_NAME, extras.getString("line_name"));
+		values.put(Bus.LONGITUDE, extras.getString("lng"));
+		values.put(Bus.STATION_NAME, extras.getString("station_name"));
+		values.put(Bus.YN_USE_IC_A, extras.getString("yn_use_ic_a"));
+		values.put(Bus.YN_USE_IC_B, extras.getString("yn_use_ic_b"));
+		values.put(Bus.YN_USE_IC_C, extras.getString("yn_use_ic_c"));
+		values.put(Bus.YN_USE_IC_D, extras.getString("yn_use_ic_d"));
+		
+		getContentResolver().insert(Uri.parse(uri), values);
 	}
 
 	@Override
 	protected void onDeletedMessages(Context context, int total) {
 		Log.i(TAG, "Received deleted messages notification");
-		String message = getString(R.string.gcm_deleted, total);
-		// displayMessage(context, message);
-		// notifies user
-		// generateNotification(context, message);
+		
 	}
 
 	@Override

@@ -1,12 +1,12 @@
 package com.loveplusplus.zhengzhou.io;
 
-import com.loveplusplus.zhengzhou.util.ServerUtilities;
-
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
+
+import com.loveplusplus.zhengzhou.util.ServerUtilities;
 
 
 public class TaskService extends IntentService {
@@ -43,10 +43,11 @@ public class TaskService extends IntentService {
 			String hczd = intent.getStringExtra("hczd");
 			
 			// 调用http
-			String back = ServerUtilities.getGps(lineName,ud,sno,hczd);
-			Log.d(TAG, back);
+			//String back = ServerUtilities.getGps(lineName,ud,sno,hczd);
+			String[] back = ServerUtilities.getGps(lineName,ud,sno);
+		//	Log.d(TAG, back);
 			Bundle b = new Bundle();
-			b.putString("response", back);
+			b.putStringArray("response", back);
 			receiver.send(STATUS_FINISHED, b);
 		} catch (Exception e) {
 			Log.e(TAG, "服务器异常", e);

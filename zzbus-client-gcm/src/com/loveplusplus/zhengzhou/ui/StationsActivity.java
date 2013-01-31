@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
@@ -35,7 +36,9 @@ public class StationsActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_stations);
-
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		mSectionsPagerAdapter = new SectionsPagerAdapter(
 				getSupportFragmentManager());
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -153,9 +156,9 @@ public class StationsActivity extends BaseActivity {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-			while(data.moveToNext()){
-				System.out.println(data.getInt(0)+":"+data.getInt(2)+"=="+data.getInt(4));
-			}
+//			while(data.moveToNext()){
+//				System.out.println(data.getInt(0)+":"+data.getInt(2)+"=="+data.getInt(4));
+//			}
 			mAdapter.swapCursor(data);
 		}
 

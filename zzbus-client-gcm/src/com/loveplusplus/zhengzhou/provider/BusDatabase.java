@@ -24,7 +24,7 @@ public class BusDatabase extends SQLiteOpenHelper {
 
 	private static final String TAG = "BusDatabase";
 	private static final String DATABASE_NAME = "bus.db";
-	private static final int DATABASE_VERSION = 15;
+	private static final int DATABASE_VERSION = 17;
 
 	interface Tables {
 		String BUS = "bus";
@@ -48,7 +48,7 @@ public class BusDatabase extends SQLiteOpenHelper {
 				+ " TEXT," + Bus.LONGITUDE + " TEXT," + Bus.STATION_NAME
 				+ " TEXT," + Bus.YN_USE_IC_A + " TEXT," + Bus.YN_USE_IC_B
 				+ " TEXT," + Bus.YN_USE_IC_C + " TEXT," + Bus.YN_USE_IC_D
-				+ " TEXT)");
+				+ " TEXT,"+Bus.ALIAS+" TEXT)");
 
 		Log.d(TAG, "创建数据库 favorite");
 		db.execSQL("CREATE  TABLE " + Tables.FAVORITE + "(" + BaseColumns._ID

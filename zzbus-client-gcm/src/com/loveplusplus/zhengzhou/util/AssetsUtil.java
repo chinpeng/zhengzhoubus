@@ -24,7 +24,7 @@ public class AssetsUtil {
 
 		String fileName = sb.toString();
 		Log.d(TAG, "---------->" + fileName);
-		InputStream is = context.getAssets().open(fileName);
+		InputStream is = context.getAssets().open(fileName.toLowerCase());
 
 		// 下一步可以把字符串进行加密
 		return makeContent(is);

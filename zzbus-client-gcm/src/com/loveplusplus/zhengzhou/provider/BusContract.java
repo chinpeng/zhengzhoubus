@@ -19,6 +19,8 @@ public class BusContract {
 		String YN_USE_IC_B="yn_use_ic_b";
 		String YN_USE_IC_C="yn_use_ic_c";
 		String YN_USE_IC_D="yn_use_ic_d";
+		String ALIAS="alias";
+		
 	}
 
 	interface FavoriteColumns {

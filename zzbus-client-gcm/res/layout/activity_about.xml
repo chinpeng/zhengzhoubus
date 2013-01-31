@@ -14,7 +14,7 @@
             android:id="@+id/backBus"
             android:layout_width="90.0dip"
             android:layout_height="90.0dip"
-            android:background="@drawable/about"
+            android:background="@drawable/icon"
             android:contentDescription="@string/app_name" />
     </LinearLayout>
 

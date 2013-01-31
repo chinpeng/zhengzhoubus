@@ -16,24 +16,32 @@
 package com.loveplusplus.zhengzhou.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Random;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Xml;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.loveplusplus.zhengzhou.Config;
 import com.loveplusplus.zhengzhou.R;
 
 /**
@@ -53,7 +61,7 @@ public final class ServerUtilities {
 	 */
 	public static boolean register(final Context context, final String regId) {
 		Log.i(TAG, "registering device (regId = " + regId + ")");
-		String serverUrl = Constants.SERVER_URL + "/register";
+		String serverUrl = Config.SERVER_URL + "/register";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regId", regId);
 		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
@@ -63,12 +71,12 @@ public final class ServerUtilities {
 		for (int i = 1; i <= MAX_ATTEMPTS; i++) {
 			Log.d(TAG, "Attempt #" + i + " to register");
 			try {
-				Constants.displayMessage(context, context.getString(
+				Config.displayMessage(context, context.getString(
 						R.string.server_registering, i, MAX_ATTEMPTS));
 				post(serverUrl, params);
 				GCMRegistrar.setRegisteredOnServer(context, true);
 				String message = context.getString(R.string.server_registered);
-				Constants.displayMessage(context, message);
+				Config.displayMessage(context, message);
 				return true;
 			} catch (IOException e) {
 				// Here we are simplifying and retrying on any error; in a real
@@ -93,7 +101,7 @@ public final class ServerUtilities {
 		}
 		String message = context.getString(R.string.server_register_error,
 				MAX_ATTEMPTS);
-		Constants.displayMessage(context, message);
+		Config.displayMessage(context, message);
 		return false;
 	}
 
@@ -102,14 +110,14 @@ public final class ServerUtilities {
 	 */
 	public static void unregister(final Context context, final String regId) {
 		Log.i(TAG, "unregistering device (regId = " + regId + ")");
-		String serverUrl = Constants.SERVER_URL + "/unregister";
+		String serverUrl = Config.SERVER_URL + "/unregister";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regId", regId);
 		try {
 			post(serverUrl, params);
 			GCMRegistrar.setRegisteredOnServer(context, false);
 			String message = context.getString(R.string.server_unregistered);
-			Constants.displayMessage(context, message);
+			Config.displayMessage(context, message);
 		} catch (IOException e) {
 			// At this point the device is unregistered from GCM, but still
 			// registered in the server.
@@ -118,7 +126,7 @@ public final class ServerUtilities {
 			// a "NotRegistered" error message and should unregister the device.
 			String message = context.getString(
 					R.string.server_unregister_error, e.getMessage());
-			Constants.displayMessage(context, message);
+			Config.displayMessage(context, message);
 		}
 	}
 
@@ -192,8 +200,85 @@ public final class ServerUtilities {
 	}
 
 	
+	public static String[] getGps(String lineName,String direction,String sno) {
+		String str1 = "1000090102f865eb33c96467a2714febe7e575d3"+
+		"<?xml version='1.0'?>" +
+		"<root>" +
+		    "<head>" +
+		      "<imei>351565053240000</imei>" +
+		      "<system>4.2.1</system>" +
+		      "<mobile></mobile>" +
+		      "<model>Galaxy Nexus</model>" +
+		    "</head>" +
+		    "<body>" +
+		      "<linename>"+lineName+"</linename>" +
+		      "<lineud>"+direction+"</lineud>" +
+		      "<stationno>"+sno+"</stationno>" +
+		    "</body>" +
+		 "</root>";
+		try {
+			Socket socket = new Socket();
+			InetSocketAddress address = new InetSocketAddress("123.15.42.27",
+					8094);
+			socket.connect(address, 10000);
+			 OutputStream os = socket.getOutputStream();
+			 os.write(str1.getBytes("GBK"));
+			 os.flush();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					socket.getInputStream(),"gbk"));
+			String xml = reader.readLine();
+			reader.close();
+			socket.close();
+			return parseXml(xml);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
 	
-	public static String getGps(String lineName,String direction,String sno,String hczd) throws IOException {
+	private static String[] parseXml(String xml) throws XmlPullParserException, IOException {
+	
+		String[] result=new String[6];
+		ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
+		XmlPullParser parser = Xml.newPullParser();
+		parser.setInput(is, "UTF-8");
+
+		// 获取事件类型
+		int eventType = parser.getEventType();
+		String tagName;
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			switch (eventType) {
+			// 文档开始
+			case XmlPullParser.START_DOCUMENT:
+				break;
+			case XmlPullParser.START_TAG:
+				tagName = parser.getName();
+				if ("linename".equals(tagName)) {
+					result[0]=parser.nextText();
+				} else if ("lineud".equals(tagName)) {
+					result[1]=parser.nextText();
+				} else if ("stateionname".equals(tagName)) {
+					result[2]=parser.nextText();
+				} else if ("gpsinfo".equals(tagName)) {
+					String s=parser.nextText();
+					String[] split = s.split("；");
+					result[3]=split.length>0?split[0]:"暂无信息";
+					result[4]=split.length>1?split[1]:"暂无信息";
+					result[5]=split.length>2?split[2]:"暂无信息";
+				}
+				break;
+			case XmlPullParser.END_TAG:
+
+				break;
+			}
+			eventType = parser.next();
+		}
+		
+		return result;
+	}
+
+	public static String getGps1(String lineName,String direction,String sno,String hczd) throws IOException {
 		String url = "http://wap.zhengzhoubus.com/gps.asp";
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("xl", lineName);

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.loveplusplus.zhengzhou"
-    android:versionCode="3"
-    android:versionName="1.0.1" >
+    android:versionCode="4"
+    android:versionName="1.0.2" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -42,6 +42,7 @@
         <activity android:name=".ui.StationsActivity" />
         <activity
             android:name="com.loveplusplus.zhengzhou.ui.SearchActivity"
+            android:configChanges="orientation"
             android:exported="false"
             android:launchMode="singleTop" >
             <intent-filter>

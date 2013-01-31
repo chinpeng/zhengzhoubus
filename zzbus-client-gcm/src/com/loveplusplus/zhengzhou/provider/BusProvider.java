@@ -1,7 +1,5 @@
 package com.loveplusplus.zhengzhou.provider;
 
-import java.util.Arrays;
-
 import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -10,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
@@ -18,7 +15,6 @@ import com.loveplusplus.zhengzhou.provider.BusDatabase.Tables;
 import com.loveplusplus.zhengzhou.util.SelectionBuilder;
 
 public class BusProvider extends ContentProvider {
-	private String TAG = "BusProvider";
 
 	private BusDatabase mOpenHelper;
 	private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -59,8 +55,6 @@ public class BusProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		Log.d(TAG, "query(uri=" + uri + ", proj=" + Arrays.toString(projection)
-				+ ")");
 		final int match = sUriMatcher.match(uri);
 		switch (match) {
 		case BUS_SEARCH_SUGGEST:
@@ -153,7 +147,6 @@ public class BusProvider extends ContentProvider {
 
 	private Cursor queryBySQL(String sql, String[] selectionArgs) {
 
-		Log.d(TAG, sql);
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 
 		Cursor cursor = db.rawQuery(sql, selectionArgs);
@@ -184,7 +177,6 @@ public class BusProvider extends ContentProvider {
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		Log.d(TAG, "insert(uri=" + uri);
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 		final int match = sUriMatcher.match(uri);
 		switch (match) {
@@ -200,7 +192,6 @@ public class BusProvider extends ContentProvider {
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		Log.d(TAG, "delete(uri=" + uri);
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		final int match = sUriMatcher.match(uri);
 		switch (match) {

@@ -23,18 +23,22 @@ public class GpsWaitingActivity extends BaseActivity implements
 	private TextView lineName;
 	private TextView lineDirect;
 	private TextView lineWaitStation;
-	private TextView lineWaitInfo;
+	private TextView lineWaitInfo1;
+	private TextView lineWaitInfo2;
+	private TextView lineWaitInfo3;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.gps_waiting);
+		setContentView(R.layout.activity_gps_waiting);
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		lineName = (TextView) findViewById(R.id.line_name);
 		lineDirect = (TextView) findViewById(R.id.line_direct);
 		lineWaitStation = (TextView) findViewById(R.id.line_wait_station);
-		lineWaitInfo = (TextView) findViewById(R.id.line_wait_info);
+		lineWaitInfo1 = (TextView) findViewById(R.id.line_wait_info_1);
+		lineWaitInfo2 = (TextView) findViewById(R.id.line_wait_info_2);
+		lineWaitInfo3 = (TextView) findViewById(R.id.line_wait_info_3);
 		taskResultReceiver = new TaskResultReceiver(new Handler());
 		taskResultReceiver.setReceiver(this);
 		refresh();
@@ -61,12 +65,16 @@ public class GpsWaitingActivity extends BaseActivity implements
 			break;
 		case TaskService.STATUS_FINISHED:
 			progressDialog.dismiss();
-			String response = resultData.getString("response");
-			String[] result = response.split("\n");
-			lineName.setText(result[0]);
-			lineDirect.setText(result[1]);
-			lineWaitStation.setText(result[2]);
-			lineWaitInfo.setText(result[3] + result[4] + result[5]);
+			String[] result = resultData.getStringArray("response");
+			// String[] result = response.split("\n");
+			if (null != result) {
+				lineName.setText(result[0]+"公交车");
+				lineDirect.setText("开往"+result[1]+"方向");
+				lineWaitStation.setText("候车于"+result[2]);
+				lineWaitInfo1.setText(result[3]);
+				lineWaitInfo2.setText(result[4]);
+				lineWaitInfo3.setText(result[5]);
+			}
 			break;
 		case TaskService.STATUS_ERROR:
 			progressDialog.dismiss();
@@ -89,9 +97,8 @@ public class GpsWaitingActivity extends BaseActivity implements
 		case R.id.menu_refresh:
 			refresh();
 			return true;
-		default:
-			return false;
 		}
+		return super.onOptionsItemSelected(item);
 	}
 
 }

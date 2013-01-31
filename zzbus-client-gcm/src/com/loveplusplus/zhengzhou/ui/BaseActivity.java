@@ -1,11 +1,10 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import android.support.v4.app.NavUtils;
-
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 public abstract class BaseActivity extends SherlockFragmentActivity {
+	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -15,7 +14,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity {
 				return false;
 			}
 
-			NavUtils.navigateUpFromSameTask(this);
+			finish();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

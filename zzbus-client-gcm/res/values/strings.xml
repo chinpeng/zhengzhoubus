@@ -4,7 +4,6 @@
     <string name="app_name">郑州公交</string>
     <string name="about">关于</string>
     
-    <string name="settings">设置</string>
     <string name="menu_share">分享</string>
     <string name="menu_search">搜索</string>
     <string name="menu_settings">设置</string>
@@ -19,8 +18,6 @@
     <string name="qq">200938337</string>
     <string name="about_tip_1">如需了解最新动态,请关注新浪微博;</string>
     <string name="about_tip_2">如有疑问和需求,  来QQ群一起交流。</string>
-    <string name="pref_push_summ">是否接收推送信息</string>
-    <string name="pref_push">推送</string>
     <string name="search_label">郑州公交</string>
     <string name="search_hint">请输入公交线路</string>
     
@@ -28,8 +25,6 @@
     <string name="search_results">你搜索的是:\"%1$s\",有%2$d条结果: </string>
 
     <string name="map">长按地图可以显示附近站点</string>
-    <string name="waiting">正在查询</string>
-    <string name="error_config">Please set the %1$s constant and recompile the app.</string>
     <string name="gcm_deleted">From GCM: server deleted %1$d pending messages!</string>
     <string name="server_registering">Trying (attempt %1$d/%2$d) to register device on Demo Server.</string>
     <string name="server_registered">From Demo Server: successfully added device!</string>
@@ -38,5 +33,11 @@
     <string name="server_unregister_error">Could not unregister device on Demo Server (%1$s).</string>
     
     <string name="no_favorite_data">暂无收藏的公交数据</string>
+    
+    <string name="gps_info_3">第三班</string>
+    
+    <string name="gps_info_2">第二班</string>
+    
+    <string name="gps_info_1">下一班</string>
 
 </resources>
