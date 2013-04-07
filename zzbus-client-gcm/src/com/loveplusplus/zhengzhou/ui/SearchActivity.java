@@ -17,6 +17,7 @@
 package com.loveplusplus.zhengzhou.ui;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
@@ -27,6 +28,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -34,9 +37,6 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.util.ReflectionUtils;
@@ -54,7 +54,7 @@ public class SearchActivity extends BaseActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
-		ActionBar actionBar = getSupportActionBar();
+		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		mTextView = (TextView) findViewById(R.id.text);
@@ -115,7 +115,7 @@ public class SearchActivity extends BaseActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		getSupportMenuInflater().inflate(R.menu.search, menu);
+		getMenuInflater().inflate(R.menu.search, menu);
 		setupSearchMenuItem(menu);
 		return true;
 	}

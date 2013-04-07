@@ -1,6 +1,7 @@
 package com.loveplusplus.zhengzhou.ui;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -17,19 +18,18 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.google.android.gcm.GCMRegistrar;
 import com.loveplusplus.zhengzhou.BuildConfig;
 import com.loveplusplus.zhengzhou.Config;
@@ -40,7 +40,6 @@ import com.loveplusplus.zhengzhou.util.UIUtils;
 
 public class HomeActivity extends BaseActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
-
 
 	private static final String TAG = "HomeActivity";
 	private SimpleCursorAdapter mAdapter;
@@ -55,12 +54,12 @@ public class HomeActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 
-		ActionBar actionBar = getSupportActionBar();
+		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(false);
 		mAdapter = new SimpleCursorAdapter(this,
-				android.R.layout.simple_list_item_2, null,
-				new String[] { Favorite.BUS_NAME, Favorite.STATION_NAME },
-				new int[] { android.R.id.text1, android.R.id.text2, }, 0);
+				android.R.layout.simple_list_item_2, null, new String[] {
+						Favorite.BUS_NAME, Favorite.STATION_NAME }, new int[] {
+						android.R.id.text1, android.R.id.text2, }, 0);
 
 		getSupportLoaderManager().initLoader(0, null, this);
 
@@ -77,16 +76,12 @@ public class HomeActivity extends BaseActivity implements
 					}
 				});
 
-		
-		
-		
 		setupView();
-		
-		
+
 		try {
 			registerGCMClient();
 		} catch (Exception e) {
-			Log.d(TAG, "gcm..."+e.getMessage());
+			Log.d(TAG, "gcm..." + e.getMessage());
 		}
 	}
 
@@ -112,8 +107,8 @@ public class HomeActivity extends BaseActivity implements
 				String lineName = cursor.getString(cursor
 						.getColumnIndex(Favorite.BUS_NAME));
 
-
-				Intent intent = new Intent(HomeActivity.this, GpsWaitingActivity.class);
+				Intent intent = new Intent(HomeActivity.this,
+						GpsWaitingActivity.class);
 
 				intent.putExtra("lineName", lineName);
 				intent.putExtra("ud", direct);
@@ -133,30 +128,32 @@ public class HomeActivity extends BaseActivity implements
 		super.onCreateContextMenu(menu, v, menuInfo);
 		getMenuInflater().inflate(R.menu.delete, menu);
 	}
-	
+
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-	    switch (item.getItemId()) {
-	        case R.id.menu_delete:
-	        	deleteSelectedItem(info.id);
-	            return true;
-	        default:
-	            return super.onContextItemSelected(item);
-	    }
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
+		switch (item.getItemId()) {
+		case R.id.menu_delete:
+			deleteSelectedItem(info.id);
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
 	}
-	
+
 	protected void deleteSelectedItem(long id) {
 
-			getContentResolver().delete(
-					Favorite.buildFavoriteUri(String.valueOf(id)),
-					Favorite._ID + "=?", new String[] { String.valueOf(id) });
+		getContentResolver().delete(
+				Favorite.buildFavoriteUri(String.valueOf(id)),
+				Favorite._ID + "=?", new String[] { String.valueOf(id) });
 
 	}
 
 	private void registerGCMClient() {
-		
+		// 如果没有 google map api 这个方法会抛出一个 UnsupportedOperationException
 		GCMRegistrar.checkDevice(this);
+
 		if (BuildConfig.DEBUG) {
 			GCMRegistrar.checkManifest(this);
 		}
@@ -208,11 +205,9 @@ public class HomeActivity extends BaseActivity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
 		if (mGCMRegisterTask != null) {
 			mGCMRegisterTask.cancel(true);
 		}
-
 		try {
 			GCMRegistrar.onDestroy(this);
 		} catch (Exception e) {
@@ -223,26 +218,32 @@ public class HomeActivity extends BaseActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		// 设置搜索
 		inflater.inflate(R.menu.search, menu);
 		setupSearchMenuItem(menu);
 
+		//设置地图
+		inflater.inflate(R.menu.map, menu);
+		setupSearchMenuItem(menu);
+		
+		
 		// 设置分享
 		inflater.inflate(R.menu.share, menu);
 		MenuItem menuItem = menu.findItem(R.id.menu_share);
-		ShareActionProvider mShareActionProvider =  (ShareActionProvider) menuItem.getActionProvider();  //line 387
+		ShareActionProvider mShareActionProvider = (ShareActionProvider) menuItem
+				.getActionProvider(); // line 387
 
-	    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-	    shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-	    shareIntent.setType("text/plain");
+		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+		shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+		shareIntent.setType("text/plain");
 
-	    shareIntent.putExtra(Intent.EXTRA_TEXT,
+		shareIntent.putExtra(Intent.EXTRA_TEXT,
 				getResources().getString(R.string.share_content));
 
-	    mShareActionProvider.setShareIntent(shareIntent);
-	    
-		//inflater.inflate(R.menu.setting, menu);
+		mShareActionProvider.setShareIntent(shareIntent);
+
+		// inflater.inflate(R.menu.setting, menu);
 		inflater.inflate(R.menu.about, menu);
 		return true;
 	}
@@ -260,7 +261,6 @@ public class HomeActivity extends BaseActivity implements
 		}
 	}
 
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -274,6 +274,10 @@ public class HomeActivity extends BaseActivity implements
 				return true;
 			}
 			break;
+			
+		case R.id.menu_map:
+			startActivity(new Intent(this, MapActivity.class));
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}

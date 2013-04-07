@@ -61,7 +61,7 @@ public final class ServerUtilities {
 	 */
 	public static boolean register(final Context context, final String regId) {
 		Log.i(TAG, "registering device (regId = " + regId + ")");
-		String serverUrl = Config.SERVER_URL + "/register";
+		
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regId", regId);
 		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
@@ -73,7 +73,7 @@ public final class ServerUtilities {
 			try {
 				Config.displayMessage(context, context.getString(
 						R.string.server_registering, i, MAX_ATTEMPTS));
-				post(serverUrl, params);
+				post(Config.REGISTER_URL, params);
 				GCMRegistrar.setRegisteredOnServer(context, true);
 				String message = context.getString(R.string.server_registered);
 				Config.displayMessage(context, message);
@@ -110,11 +110,11 @@ public final class ServerUtilities {
 	 */
 	public static void unregister(final Context context, final String regId) {
 		Log.i(TAG, "unregistering device (regId = " + regId + ")");
-		String serverUrl = Config.SERVER_URL + "/unregister";
+		
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regId", regId);
 		try {
-			post(serverUrl, params);
+			post(Config.UNREGISTER_URL, params);
 			GCMRegistrar.setRegisteredOnServer(context, false);
 			String message = context.getString(R.string.server_unregistered);
 			Config.displayMessage(context, message);

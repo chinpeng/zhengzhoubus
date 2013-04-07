@@ -5,13 +5,23 @@
     android:versionName="1.0.2" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <permission
         android:name="com.loveplusplus.zhengzhou.permission.C2D_MESSAGE"
@@ -20,13 +30,19 @@
     <uses-permission android:name="com.loveplusplus.zhengzhou.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
+    <permission
+        android:name="com.loveplusplus.zhengzhou.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.loveplusplus.zhengzhou.permission.MAPS_RECEIVE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".ui.HomeActivity"
+            android:name="com.loveplusplus.zhengzhou.ui.HomeActivity"
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,11 +51,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.AboutActivity"
+            android:name="com.loveplusplus.zhengzhou.ui.AboutActivity"
             android:label="@string/about" />
-        <activity android:name=".ui.GpsWaitingActivity" />
-        <activity android:name=".ui.NotifyDetailActivity" />
-        <activity android:name=".ui.StationsActivity" />
+        <activity android:name="com.loveplusplus.zhengzhou.ui.GpsWaitingActivity" />
+        <activity android:name="com.loveplusplus.zhengzhou.ui.NotifyDetailActivity" />
+        <activity android:name="com.loveplusplus.zhengzhou.ui.StationsActivity" />
         <activity
             android:name="com.loveplusplus.zhengzhou.ui.SearchActivity"
             android:configChanges="orientation"
@@ -69,16 +85,25 @@
         </receiver>
 
         <provider
-            android:name=".provider.BusProvider"
+            android:name="com.loveplusplus.zhengzhou.provider.BusProvider"
             android:authorities="com.loveplusplus.zhengzhou.provider.BusProvider"
             android:exported="false" />
 
-        <service android:name=".GCMIntentService" />
-        <service android:name=".io.TaskService" />
+        <service android:name="com.loveplusplus.zhengzhou.GCMIntentService" />
+        <service android:name="com.loveplusplus.zhengzhou.io.TaskService" />
 
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".ui.SearchActivity" />
+
+        <activity
+            android:name="com.loveplusplus.zhengzhou.ui.MapActivity"
+            android:label="@string/title_activity_map" >
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyDc_E-wGkxP7iiM8QmPekI5FS6gxSroHSA" />
     </application>
 
 </manifest>

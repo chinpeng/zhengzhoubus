@@ -16,7 +16,7 @@ public class NotifyDetailActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_notify_detail);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		mTextView = (TextView) findViewById(R.id.notify_content);
 
 		handleIntent(getIntent());

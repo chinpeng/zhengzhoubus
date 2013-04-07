@@ -1,9 +1,9 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
+import android.support.v4.app.FragmentActivity;
+import android.view.MenuItem;
 
-public abstract class BaseActivity extends SherlockFragmentActivity {
+public abstract class BaseActivity extends FragmentActivity {
 	
 
 	@Override

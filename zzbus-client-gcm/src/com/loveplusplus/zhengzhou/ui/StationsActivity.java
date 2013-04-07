@@ -1,5 +1,6 @@
 package com.loveplusplus.zhengzhou.ui;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -19,7 +20,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
@@ -36,7 +36,7 @@ public class StationsActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_stations);
-		ActionBar actionBar = getSupportActionBar();
+		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		mSectionsPagerAdapter = new SectionsPagerAdapter(

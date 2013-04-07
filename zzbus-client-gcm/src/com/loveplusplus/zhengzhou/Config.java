@@ -11,8 +11,10 @@ public class Config {
 	/**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
-    public static final String SERVER_URL = "http://192.168.1.85:8080/GCMService";
+    public static final String SERVER_URL = "http://zhengzhoubus.sinaapp.com";
 
+    public static final String REGISTER_URL = Config.SERVER_URL + "/api/register";
+    public static final String UNREGISTER_URL = Config.SERVER_URL + "/api/unregister";
     /**
      * Google API project id registered to use GCM.
      */

@@ -14,7 +14,7 @@ public class AboutActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setUpView();
 //		Intent intent = new Intent(Intent.ACTION_VIEW);
 //		intent.setData(Uri.parse("market://details?id=com.example.android"));
