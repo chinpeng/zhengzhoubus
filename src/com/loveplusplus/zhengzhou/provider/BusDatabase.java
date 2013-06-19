@@ -24,7 +24,7 @@ public class BusDatabase extends SQLiteOpenHelper {
 
 	private static final String TAG = "BusDatabase";
 	private static final String DATABASE_NAME = "bus.db";
-	private static final int DATABASE_VERSION = 17;
+	private static final int DATABASE_VERSION = 18;
 
 	interface Tables {
 		String BUS = "bus";
@@ -50,7 +50,6 @@ public class BusDatabase extends SQLiteOpenHelper {
 				+ " TEXT," + Bus.YN_USE_IC_C + " TEXT," + Bus.YN_USE_IC_D
 				+ " TEXT,"+Bus.ALIAS+" TEXT)");
 
-		Log.d(TAG, "创建数据库 favorite");
 		db.execSQL("CREATE  TABLE " + Tables.FAVORITE + "(" + BaseColumns._ID
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+ FavoriteColumns.STATION_NAME + " TEXT," + FavoriteColumns.SNO
@@ -69,11 +68,10 @@ public class BusDatabase extends SQLiteOpenHelper {
 				try {
 					Log.d(TAG, "加载数据");
 					saveBus(db);
-					Log.d(TAG, "加载数据");
 				} catch (IOException e) {
-					Log.e(TAG, " 加载数据异常" + e.getMessage());
+					Log.e(TAG, " 加载数据,出现IO异常",e);
 				} catch (JSONException e) {
-					Log.e(TAG, " 加载数据异常" + e.getMessage());
+					Log.e(TAG, " 加载数据,出现JSON异常" ,e);
 				}
 			}
 		}).start();
@@ -91,6 +89,7 @@ public class BusDatabase extends SQLiteOpenHelper {
 			list = new ArrayList<ContentValues>();
 			// 根据公交线路名称，获取该线路的json数据，解析json,并插入数据库
 			String json = AssetsUtil.loadJson(name, context);
+			
 			JSONArray array = new JSONArray(json);
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject obj = (JSONObject) array.get(i);

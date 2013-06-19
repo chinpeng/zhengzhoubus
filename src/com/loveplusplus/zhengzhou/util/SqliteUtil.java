@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-public class tt {
+public class SqliteUtil {
 
 	public static final String DATABASE_TABLE = "bus";
 	private Context context;

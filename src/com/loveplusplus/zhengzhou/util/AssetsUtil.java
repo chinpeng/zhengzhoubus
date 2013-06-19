@@ -23,7 +23,7 @@ public class AssetsUtil {
 		sb.append(".json");
 
 		String fileName = sb.toString();
-		InputStream is = context.getAssets().open(fileName.toLowerCase(Locale.CHINA));
+		InputStream is = context.getAssets().open(fileName);
 
 		// 下一步可以把字符串进行加密
 		return makeContent(is);

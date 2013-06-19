@@ -20,102 +20,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.util.Log;
 import android.util.Xml;
 
 /**
  * Helper class used to communicate with the demo server.
  */
-public final class ServerUtilities {
-
-	private static final String TAG = "ServerUtilities";
+public final class SocketUtil {
 
 
-	/**
-	 * Issue a POST request to the server.
-	 * 
-	 * @param endpoint
-	 *            POST address.
-	 * @param params
-	 *            request parameters.
-	 * 
-	 * @throws IOException
-	 *             propagated from POST.
-	 */
-	public static String post(String urlString, Map<String, String> params)
-			throws IOException {
-		URL url;
-		try {
-			url = new URL(urlString);
-		} catch (MalformedURLException e) {
-			throw new IllegalArgumentException("invalid url: " + urlString);
-		}
-		StringBuilder bodyBuilder = new StringBuilder();
-		if (null != params) {
-			Iterator<Entry<String, String>> iterator = params.entrySet()
-					.iterator();
-			// constructs the POST body using the parameters
-			while (iterator.hasNext()) {
-				Entry<String, String> param = iterator.next();
-				bodyBuilder.append(param.getKey()).append('=')
-						.append(param.getValue());
-				if (iterator.hasNext()) {
-					bodyBuilder.append('&');
-				}
-			}
-		}
-		String body = bodyBuilder.toString();
-		Log.v(TAG, "Posting '" + body + "' to " + url);
-		byte[] bytes = body.getBytes();
-		HttpURLConnection conn = null;
-		try {
-			conn = (HttpURLConnection) url.openConnection();
-			conn.setDoOutput(true);
-			conn.setUseCaches(false);
-			conn.setFixedLengthStreamingMode(bytes.length);
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Type",
-					"application/x-www-form-urlencoded;charset=UTF-8");
-			// post the request
-			OutputStream out = conn.getOutputStream();
-			out.write(bytes);
-			out.close();
-			// handle the response
-			int status = conn.getResponseCode();
-			if (status != 200) {
-				throw new IOException("Post failed with error code " + status);
-			}
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line+"\n");
-            }
-            br.close();
-            return sb.toString();
-		} finally {
-			if (conn != null) {
-				conn.disconnect();
-			}
-		}
-	}
-
-	
 	public static String[] getGps(String lineName,String direction,String sno) {
 		String str1 = "1000090102f865eb33c96467a2714febe7e575d3"+
 		"<?xml version='1.0'?>" +
@@ -194,30 +112,5 @@ public final class ServerUtilities {
 		return result;
 	}
 
-	public static String getGps1(String lineName,String direction,String sno,String hczd) throws IOException {
-		String url = "http://wap.zhengzhoubus.com/gps.asp";
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("xl", lineName);
-		map.put("ud", direction);
-		//map.put("fx", value);
-		map.put("sno", sno);
-		map.put("hczd", hczd);
-		map.put("ref", "4");
-
-		String str= ServerUtilities.post(url, map);
-		
-		return parseHtml(str);
-	}
 	
-	public static String parseHtml(String str){
-		Matcher matcher = Pattern.compile("【GPS候车查询】<br>([\\w\\W]+?)<br><br>获取最新信息")
-				.matcher(str);
-		if (matcher.find()) {
-			str = matcher.group(1).replace("  ", "").replace("<br>注", "\n\n注")
-					.replace("</a>", "").replace("<br>", "\n");
-		} 
-		return str;
-		
-		
-	}
 }

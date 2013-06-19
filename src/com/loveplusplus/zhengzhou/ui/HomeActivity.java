@@ -5,7 +5,6 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,13 +34,8 @@ import com.loveplusplus.zhengzhou.util.UIUtils;
 public class HomeActivity extends BaseActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
-
-	private static final String TAG = "HomeActivity";
 	private SimpleCursorAdapter mAdapter;
-	private AsyncTask<Void, Void, Void> mGCMRegisterTask;
-
 	private ListView mListView;
-
 	private TextView mEmptyView;
 
 	@Override
@@ -51,10 +45,11 @@ public class HomeActivity extends BaseActivity implements
 
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setHomeButtonEnabled(false);
+		
 		mAdapter = new SimpleCursorAdapter(this,
-				android.R.layout.simple_list_item_2, null,
+				R.layout.activity_home_item, null,
 				new String[] { Favorite.BUS_NAME, Favorite.STATION_NAME },
-				new int[] { android.R.id.text1, android.R.id.text2, }, 0);
+				new int[] { R.id.bus_name, R.id.station_name, }, 0);
 
 		getSupportLoaderManager().initLoader(0, null, this);
 
@@ -70,13 +65,7 @@ public class HomeActivity extends BaseActivity implements
 						}
 					}
 				});
-
-		
-		
-		
 		setupView();
-		
-		
 	}
 
 	private void setupView() {

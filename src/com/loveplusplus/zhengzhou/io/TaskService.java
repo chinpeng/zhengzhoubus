@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
-import com.loveplusplus.zhengzhou.util.ServerUtilities;
+import com.loveplusplus.zhengzhou.util.SocketUtil;
 
 
 public class TaskService extends IntentService {
@@ -44,7 +44,7 @@ public class TaskService extends IntentService {
 			
 			// 调用http
 			//String back = ServerUtilities.getGps(lineName,ud,sno,hczd);
-			String[] back = ServerUtilities.getGps(lineName,ud,sno);
+			String[] back = SocketUtil.getGps(lineName,ud,sno);
 		//	Log.d(TAG, back);
 			Bundle b = new Bundle();
 			b.putStringArray("response", back);

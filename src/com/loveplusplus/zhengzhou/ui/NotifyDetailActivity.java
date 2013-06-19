@@ -7,6 +7,11 @@ import android.widget.TextView;
 
 import com.loveplusplus.zhengzhou.R;
 
+/**
+ * 该类暂未使用
+ * @author feicien
+ *
+ */
 public class NotifyDetailActivity extends BaseActivity {
 
 	private static final String TAG = "NotifyDetailActivity";

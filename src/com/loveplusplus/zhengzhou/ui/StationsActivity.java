@@ -15,7 +15,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -28,7 +27,7 @@ public class StationsActivity extends BaseActivity {
 
 	public static final String TAG = "StationsActivity";
 
-	static SectionsPagerAdapter mSectionsPagerAdapter;
+	static StationsPagerAdapter mStationsPagerAdapter;
 
 	static ViewPager mViewPager;
 
@@ -38,25 +37,22 @@ public class StationsActivity extends BaseActivity {
 		setContentView(R.layout.activity_stations);
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		
-		mSectionsPagerAdapter = new SectionsPagerAdapter(
+		mStationsPagerAdapter = new StationsPagerAdapter(
 				getSupportFragmentManager());
 		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
+		mViewPager.setAdapter(mStationsPagerAdapter);
 
 	}
 
-	
+	public class StationsPagerAdapter extends FragmentPagerAdapter {
 
-	public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-		public SectionsPagerAdapter(FragmentManager fm) {
+		public StationsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			ListFragment fragment = new DummySectionFragment();
+			StationListFragment fragment = new StationListFragment();
 			Bundle args = new Bundle();
 			args.putString("direct", String.valueOf(position));
 			fragment.setArguments(args);
@@ -82,16 +78,13 @@ public class StationsActivity extends BaseActivity {
 		}
 	}
 
-	/**
-	 * A dummy fragment representing a section of the app, but that simply
-	 * displays dummy text.
-	 */
-	public static class DummySectionFragment extends ListFragment implements
+	
+	public static class StationListFragment extends ListFragment implements
 			LoaderCallbacks<Cursor> {
 
 		SimpleCursorAdapter mAdapter;
 
-		public DummySectionFragment() {
+		public StationListFragment() {
 
 		}
 
@@ -108,33 +101,32 @@ public class StationsActivity extends BaseActivity {
 			String lineName = cursor.getString(cursor
 					.getColumnIndex(Bus.LINE_NAME));
 
-			Log.d(TAG, waitStation + " " + direct + " " + sno + " " + lineName);
-
-			Intent intent = new Intent(getActivity(), GpsWaitingActivity.class);
-
-			intent.putExtra("lineName", lineName);
-			intent.putExtra("ud", direct);
-			intent.putExtra("sno", sno);
-			intent.putExtra("hczd", waitStation);
-			startActivity(intent);
-
+			// 保存到数据库
 			ContentValues values = new ContentValues();
 			values.put(Favorite.BUS_NAME, lineName);
 			values.put(Favorite.DIRECT, direct);
 			values.put(Favorite.SNO, sno);
 			values.put(Favorite.STATION_NAME, waitStation);
-
 			getActivity().getContentResolver().insert(Favorite.CONTENT_URI,
 					values);
+			
+			
+			Intent intent = new Intent(getActivity(), GpsWaitingActivity.class);
+			intent.putExtra("lineName", lineName);
+			intent.putExtra("ud", direct);
+			intent.putExtra("sno", sno);
+			intent.putExtra("hczd", waitStation);
+			startActivity(intent);
 		}
 
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
+			
 			mAdapter = new SimpleCursorAdapter(activity,
-					android.R.layout.simple_list_item_1, null,
-					new String[] {Bus.STATION_NAME }, new int[] { android.R.id.text1 },
-					0);
+					R.layout.activity_stations_item, null,
+					new String[] { Bus.LABEL_NO,Bus.STATION_NAME },
+					new int[] { R.id.sno,R.id.station_name }, 0);
 			setListAdapter(mAdapter);
 
 			Loader<Cursor> loader = getLoaderManager().getLoader(0);
@@ -156,9 +148,6 @@ public class StationsActivity extends BaseActivity {
 
 		@Override
 		public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//			while(data.moveToNext()){
-//				System.out.println(data.getInt(0)+":"+data.getInt(2)+"=="+data.getInt(4));
-//			}
 			mAdapter.swapCursor(data);
 		}
 

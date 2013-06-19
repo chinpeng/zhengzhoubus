@@ -97,9 +97,9 @@ public class SearchActivity extends BaseActivity implements
 		query = intent.getStringExtra(SearchManager.QUERY);
 
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-			Intent wordIntent = new Intent(this, StationsActivity.class);
-			wordIntent.setData(intent.getData());
-			startActivity(wordIntent);
+			Intent stationsIntent = new Intent(this, StationsActivity.class);
+			stationsIntent.setData(intent.getData());
+			startActivity(stationsIntent);
 		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			Loader<Cursor> loader = getSupportLoaderManager().getLoader(0);
 			if (null == loader) {
