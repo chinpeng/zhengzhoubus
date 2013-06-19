@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="dimgray">#ff696969</color>
+    
+    <color name="actionBarColor">#33b5e5</color>
+    <color name="splitActionbarColor">#33b5e5</color>
+    
+
+</resources>
