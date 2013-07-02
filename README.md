@@ -1,6 +1,7 @@
 zzbus
 =====
 
-本项目是用来学习android推送技术。
-使用的技术有GCM,Jpush,Androidpn
-包括客户端与服务器端相关代码
+郑州公交查询开源代码
+公交线路信息来源于郑州市公交公司
+线路查询:http://218.28.136.21:8081/linelist.asp?topage=1
+线路详细信息:http://218.28.136.21:8081/line.asp?xl=1&ref=0
