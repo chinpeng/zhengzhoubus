@@ -16,33 +16,32 @@
 
 package com.loveplusplus.zhengzhou.ui;
 
-import android.annotation.TargetApi;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.LoaderManager;
 import android.app.SearchManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.util.ReflectionUtils;
 import com.loveplusplus.zhengzhou.util.UIUtils;
 
-public class SearchActivity extends BaseActivity implements
+public class SearchActivity extends Activity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private TextView mTextView;
@@ -54,7 +53,7 @@ public class SearchActivity extends BaseActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
-		ActionBar actionBar = getSupportActionBar();
+		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		mTextView = (TextView) findViewById(R.id.text);
@@ -101,12 +100,12 @@ public class SearchActivity extends BaseActivity implements
 			stationsIntent.setData(intent.getData());
 			startActivity(stationsIntent);
 		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			Loader<Cursor> loader = getSupportLoaderManager().getLoader(0);
+			Loader<Cursor> loader = getLoaderManager().getLoader(0);
 			if (null == loader) {
-				getSupportLoaderManager().initLoader(0, intent.getExtras(),
+				getLoaderManager().initLoader(0, intent.getExtras(),
 						this);
 			} else {
-				getSupportLoaderManager().restartLoader(0, intent.getExtras(),
+				getLoaderManager().restartLoader(0, intent.getExtras(),
 						this);
 			}
 		}
@@ -115,12 +114,11 @@ public class SearchActivity extends BaseActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		getSupportMenuInflater().inflate(R.menu.search, menu);
+		getMenuInflater().inflate(R.menu.search, menu);
 		setupSearchMenuItem(menu);
 		return true;
 	}
 
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void setupSearchMenuItem(Menu menu) {
 		final MenuItem searchItem = menu.findItem(R.id.menu_search);
 		if (searchItem != null && UIUtils.hasHoneycomb()) {

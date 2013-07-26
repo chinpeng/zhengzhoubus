@@ -2,29 +2,33 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="@style/Theme.Sherlock.Light">
-        <item name="actionBarStyle">@style/ActionBarStyle</item>
-        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
+<!--         <item name="android:actionBarStyle">@style/ActionBarStyle</item> -->
     </style>
 
-    <style name="ActionBarStyle" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-        <item name="background">@color/actionBarColor</item>
+    <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/actionBarColor</item>
-        <item name="backgroundSplit">@color/splitActionbarColor</item>
         <item name="android:backgroundSplit">@color/splitActionbarColor</item>
-        <item name="titleTextStyle">@style/ActionBar.Title.Text</item>
         <item name="android:titleTextStyle">@style/ActionBar.Title.Text</item>
-        <item name="subtitleTextStyle">@style/ActionBar.Subtitle.Text</item>
         <item name="android:subtitleTextStyle">@style/ActionBar.Subtitle.Text</item>
+        <item name="android:actionBarTabStyle">@style/ActionBar.TabStyle</item>
     </style>
 
-    <style name="ActionBar.Title.Text" parent="@style/TextAppearance.Sherlock.Widget.ActionBar.Title.Inverse">
+    <style name="ActionBar.Title.Text" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse">
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="ActionBar.Subtitle.Text" parent="@style/TextAppearance.Sherlock.Widget.ActionBar.Subtitle.Inverse">
+    <style name="ActionBar.Subtitle.Text" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle.Inverse">
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="ActionBar.TabStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+<!--         <item name="android:background">@color/actionBarColor</item> -->
+        <item name="android:paddingLeft">32dp</item>
+        <item name="android:paddingRight">32dp</item>
+    </style>
+
+
 
     <style name="textNoDataStyle">
         <item name="android:background">@drawable/textview_buddle_bg</item>

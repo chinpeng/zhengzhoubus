@@ -1,37 +1,38 @@
 package com.loveplusplus.zhengzhou.ui;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.LoaderManager;
 import android.app.SearchManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.ShareActionProvider;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 import com.loveplusplus.zhengzhou.util.UIUtils;
 
-public class HomeActivity extends BaseActivity implements
+public class HomeActivity extends Activity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private SimpleCursorAdapter mAdapter;
@@ -43,7 +44,7 @@ public class HomeActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 
-		ActionBar actionBar = getSupportActionBar();
+		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(false);
 		
 		mAdapter = new SimpleCursorAdapter(this,
@@ -51,15 +52,14 @@ public class HomeActivity extends BaseActivity implements
 				new String[] { Favorite.BUS_NAME, Favorite.STATION_NAME },
 				new int[] { R.id.bus_name, R.id.station_name, }, 0);
 
-		getSupportLoaderManager().initLoader(0, null, this);
+		getLoaderManager().initLoader(0, null, this);
 
 		getContentResolver().registerContentObserver(Favorite.CONTENT_URI,
 				true, new ContentObserver(new Handler()) {
 					@Override
 					public void onChange(boolean selfChange) {
 
-						Loader<Cursor> loader1 = getSupportLoaderManager()
-								.getLoader(0);
+						Loader<Cursor> loader1 = getLoaderManager().getLoader(0);
 						if (loader1 != null) {
 							loader1.forceLoad();
 						}
@@ -137,7 +137,7 @@ public class HomeActivity extends BaseActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		// 设置搜索
 		inflater.inflate(R.menu.search, menu);
 		setupSearchMenuItem(menu);
