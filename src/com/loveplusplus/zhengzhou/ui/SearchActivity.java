@@ -17,7 +17,6 @@
 package com.loveplusplus.zhengzhou.ui;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.CursorLoader;
@@ -41,7 +40,7 @@ import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
 import com.loveplusplus.zhengzhou.util.ReflectionUtils;
 import com.loveplusplus.zhengzhou.util.UIUtils;
 
-public class SearchActivity extends Activity implements
+public class SearchActivity extends BaseActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private TextView mTextView;

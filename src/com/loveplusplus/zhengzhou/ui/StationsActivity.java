@@ -1,15 +1,13 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import com.loveplusplus.zhengzhou.fragment.StationListFragment;
-
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 
-public class StationsActivity extends Activity {
+import com.loveplusplus.zhengzhou.fragment.StationListFragment;
+
+public class StationsActivity extends BaseActivity {
 
 	public static final String TAG = "StationsActivity";
 

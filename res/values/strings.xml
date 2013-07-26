@@ -13,11 +13,10 @@
     
     <string name="share_content">郑州公交查询，可以查询200余条公交线路的实时运行信息，下载地址：http://play.google.com/store/apps/details?id=com.loveplusplus.zhengzhou</string>
     <string name="app_version">版本: </string>
-    <string name="app_version_test">V 1.5</string>
+    <string name="app_version_test">版本：V 1.5</string>
     <string name="weibo">"@程辉_feicien"</string>
     <string name="qq">200938337</string>
-    <string name="about_tip_1">如需了解最新动态,请关注新浪微博;</string>
-    <string name="about_tip_2">如有疑问和需求,  来QQ群一起交流。</string>
+    <string name="about_tip_1">如需了解最新动态,请关注新浪微博;\n如有疑问和需求,  来QQ群一起交流。\n欢迎到应用市场给本软件评分。</string>
     <string name="search_label">郑州公交</string>
     <string name="search_hint">请输入公交线路</string>
     

@@ -2,7 +2,6 @@ package com.loveplusplus.zhengzhou.ui;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.CursorLoader;
@@ -32,7 +31,7 @@ import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 import com.loveplusplus.zhengzhou.util.UIUtils;
 
-public class HomeActivity extends Activity implements
+public class HomeActivity extends BaseActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private SimpleCursorAdapter mAdapter;

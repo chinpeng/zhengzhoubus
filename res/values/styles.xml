@@ -3,29 +3,6 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
-<!--         <item name="android:actionBarStyle">@style/ActionBarStyle</item> -->
-    </style>
-
-    <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/actionBarColor</item>
-        <item name="android:backgroundSplit">@color/splitActionbarColor</item>
-        <item name="android:titleTextStyle">@style/ActionBar.Title.Text</item>
-        <item name="android:subtitleTextStyle">@style/ActionBar.Subtitle.Text</item>
-        <item name="android:actionBarTabStyle">@style/ActionBar.TabStyle</item>
-    </style>
-
-    <style name="ActionBar.Title.Text" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse">
-        <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="ActionBar.Subtitle.Text" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle.Inverse">
-        <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="ActionBar.TabStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
-<!--         <item name="android:background">@color/actionBarColor</item> -->
-        <item name="android:paddingLeft">32dp</item>
-        <item name="android:paddingRight">32dp</item>
     </style>
 
 

@@ -1,6 +1,5 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +12,7 @@ import com.loveplusplus.zhengzhou.R;
  * @author feicien
  *
  */
-public class NotifyDetailActivity extends Activity {
+public class NotifyDetailActivity extends BaseActivity {
 
 	private static final String TAG = "NotifyDetailActivity";
 	private TextView mTextView;
