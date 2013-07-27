@@ -39,8 +39,10 @@
     
     <string name="sno">19</string>
     
-    <string name="station_name">文化路国基路站</string>
+    <string name="station_name">XXX站</string>
     
     <string name="wait_station">候车站点：</string>
+    
+    <string name="bus_name">97路</string>
 
 </resources>
