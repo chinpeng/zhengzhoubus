@@ -1,6 +1,5 @@
 package com.loveplusplus.zhengzhou.ui;
 
-import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,8 +30,6 @@ public class GpsWaitingActivity extends BaseActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gps_waiting);
-		ActionBar actionBar = getActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
 		lineName = (TextView) findViewById(R.id.line_name);
 		lineDirect = (TextView) findViewById(R.id.line_direct);
 		lineWaitStation = (TextView) findViewById(R.id.line_wait_station);

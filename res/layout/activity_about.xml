@@ -45,7 +45,7 @@
         android:layout_marginTop="10dp"
         android:text="@string/about_tip_1"
         android:textColor="@color/black"
-        android:textSize="12sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/t4"
@@ -59,13 +59,5 @@
         android:textColor="@color/black"
         android:textSize="15sp" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_below="@id/t4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:text="评分" />
 
 </RelativeLayout>

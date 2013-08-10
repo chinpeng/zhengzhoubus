@@ -1,15 +1,18 @@
 package com.loveplusplus.zhengzhou.ui;
 
+import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
+
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
 import com.loveplusplus.zhengzhou.R;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.MenuItem;
+public abstract class BaseActivity extends ActionBarActivity{
 
-public abstract class BaseActivity extends Activity{
+	protected ActionBar actionBar;
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -24,7 +27,8 @@ public abstract class BaseActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		EasyTracker.getInstance().setContext(this);  
         
