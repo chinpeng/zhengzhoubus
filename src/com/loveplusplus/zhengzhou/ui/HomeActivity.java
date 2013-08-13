@@ -18,6 +18,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -30,7 +31,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.android.gcm.GCMRegistrar;
@@ -44,12 +44,12 @@ public class HomeActivity extends BaseActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String TAG = makeLogTag(HomeActivity.class);
-	
+
 	private SimpleCursorAdapter mAdapter;
 	private ListView mListView;
 	private TextView mEmptyView;
-	
-	 private AsyncTask<Void, Void, Void> mGCMRegisterTask;
+
+	private AsyncTask<Void, Void, Void> mGCMRegisterTask;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,51 +83,43 @@ public class HomeActivity extends BaseActivity implements
 	}
 
 	private void registerGCMClient() {
-		
-		GCMRegistrar.checkDevice(this);
-		
-		GCMRegistrar.checkManifest(this);
+		boolean gcm = true;
+		try {
+			GCMRegistrar.checkDevice(this);
+		} catch (UnsupportedOperationException e) {
+			gcm = false;
+		}
 
-		final String regId = GCMRegistrar.getRegistrationId(this);
-
-		if (TextUtils.isEmpty(regId)) {
-			// Automatically registers application on startup.
-			GCMRegistrar.register(this, Config.GCM_SENDER_ID);
-
-		} else {
-			// Device is already registered on GCM, needs to check if it is
-			// registered on our server as well.
-			if (ServerUtilities.isRegisteredOnServer(this)) {
-				// Skips registration.
-				LOGI(TAG, "Already registered on the C2DM server");
+		if (gcm) {
+			GCMRegistrar.checkManifest(this);
+			final String regId = GCMRegistrar.getRegistrationId(this);
+			if (TextUtils.isEmpty(regId)) {
+				GCMRegistrar.register(this, Config.GCM_SENDER_ID);
 			} else {
-				// Try to register again, but not in the UI thread.
-				// It's also necessary to cancel the thread onDestroy(),
-				// hence the use of AsyncTask instead of a raw thread.
-				mGCMRegisterTask = new AsyncTask<Void, Void, Void>() {
-					@Override
-					protected Void doInBackground(Void... params) {
-						boolean registered = ServerUtilities.register(
-								HomeActivity.this, regId);
-						// At this point all attempts to register with the app
-						// server failed, so we need to unregister the device
-						// from GCM - the app will try to register again when
-						// it is restarted. Note that GCM will send an
-						// unregistered callback upon completion, but
-						// GCMIntentService.onUnregistered() will ignore it.
-						if (!registered) {
-							GCMRegistrar.unregister(HomeActivity.this);
+				if (ServerUtilities.isRegisteredOnServer(this)) {
+					LOGI(TAG, "Already registered on the C2DM server");
+				} else {
+					mGCMRegisterTask = new AsyncTask<Void, Void, Void>() {
+						@Override
+						protected Void doInBackground(Void... params) {
+							boolean registered = ServerUtilities.register(
+									HomeActivity.this, regId);
+							if (!registered) {
+								GCMRegistrar.unregister(HomeActivity.this);
+							}
+							return null;
 						}
-						return null;
-					}
 
-					@Override
-					protected void onPostExecute(Void result) {
-						mGCMRegisterTask = null;
-					}
-				};
-				mGCMRegisterTask.execute(null, null, null);
+						@Override
+						protected void onPostExecute(Void result) {
+							mGCMRegisterTask = null;
+						}
+					};
+					mGCMRegisterTask.execute(null, null, null);
+				}
 			}
+		} else {
+			LOGI(TAG, "no gcm");
 		}
 	}
 
@@ -205,8 +197,7 @@ public class HomeActivity extends BaseActivity implements
 
 	protected void deleteSelectedItem(long id) {
 
-		getContentResolver().delete(
-				Favorite.buildUri(String.valueOf(id)),
+		getContentResolver().delete(Favorite.buildUri(String.valueOf(id)),
 				Favorite._ID + "=?", new String[] { String.valueOf(id) });
 
 	}
@@ -250,11 +241,10 @@ public class HomeActivity extends BaseActivity implements
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void setUpSearchMenuItem(MenuItem searchItem) {
 
-		SearchView searchView = (SearchView) searchItem.getActionView();
+		SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 		if (searchView != null) {
 			SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-			searchView.setSearchableInfo(searchManager
-					.getSearchableInfo(getComponentName()));
+			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 			searchView.setQueryRefinementEnabled(true);
 		}
 	}
