@@ -3,9 +3,8 @@
     android:hint="@string/search_hint"
     android:label="@string/search_label"
     android:searchSuggestAuthority="com.loveplusplus.zhengzhou.provider.BusProvider"
-    android:searchSuggestIntentData="content://com.loveplusplus.zhengzhou.provider.BusProvider/bus_info"
+    android:searchSuggestIntentData="content://com.loveplusplus.zhengzhou.provider.BusProvider/bus_line_station"
     android:searchSuggestIntentAction="android.intent.action.VIEW"
-    android:searchSuggestPath="bus"
-    android:searchSuggestSelection=" ?"
+    android:searchSuggestSelection=" line_name like ?"
     android:searchSuggestThreshold="1"
     android:voiceSearchMode="showVoiceSearchButton|launchRecognizer" />

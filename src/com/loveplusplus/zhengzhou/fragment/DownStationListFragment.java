@@ -18,7 +18,7 @@ import com.loveplusplus.zhengzhou.provider.BusContract.BusLineStation;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 import com.loveplusplus.zhengzhou.ui.GpsWaitingActivity;
 
-public class StationListFragment extends ListFragment implements
+public class DownStationListFragment extends ListFragment implements
 		LoaderCallbacks<Cursor> {
 
 	SimpleCursorAdapter mAdapter;
@@ -74,8 +74,8 @@ public class StationListFragment extends ListFragment implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
 		Activity activity = getActivity();
 		Intent intent = activity.getIntent();
-		return new CursorLoader(activity, intent.getData(), null, null,
-				new String[] { arg1.getString("direct") }, null);
+		return new CursorLoader(activity, intent.getData(), null, "direct=?",
+				new String[] { "1" }, "sno");
 	}
 
 	@Override

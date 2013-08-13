@@ -2,13 +2,14 @@ package com.loveplusplus.zhengzhou.io;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.loveplusplus.zhengzhou.io.model.Line;
-import com.loveplusplus.zhengzhou.io.model.Lines;
 import com.loveplusplus.zhengzhou.provider.BusContract;
 import com.loveplusplus.zhengzhou.util.Lists;
 
@@ -23,12 +24,12 @@ public class LineHandler extends JSONHandler {
 			throws IOException {
 		final ArrayList<ContentProviderOperation> batch = Lists.newArrayList();
 
-		Lines busLines = new Gson().fromJson(json, Lines.class);
+		List<Line> busLines = new Gson().fromJson(json,
+				new TypeToken<List<Line>>() {
+				}.getType());
 
-		int noOfBusLines = busLines.lines.length;
-
-		for (int i = 0; i < noOfBusLines; i++) {
-			parseBusLine(busLines.lines[i], batch);
+		for (Line line : busLines) {
+			parseBusLine(line, batch);
 		}
 		return batch;
 	}
@@ -43,7 +44,8 @@ public class LineHandler extends JSONHandler {
 		builder.withValue(BusContract.BusLine.END_STATION, busLine.endStation);
 		builder.withValue(BusContract.BusLine.FIRST_TIME, busLine.firstTime);
 		builder.withValue(BusContract.BusLine.LINE_NAME, busLine.lineName);
-		builder.withValue(BusContract.BusLine.START_STATION, busLine.startStation);
+		builder.withValue(BusContract.BusLine.START_STATION,
+				busLine.startStation);
 
 		batch.add(builder.build());
 	}

@@ -1,6 +1,10 @@
 package com.loveplusplus.zhengzhou.provider;
 
+import static com.loveplusplus.zhengzhou.util.LogUtils.LOGV;
+import static com.loveplusplus.zhengzhou.util.LogUtils.makeLogTag;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.app.SearchManager;
 import android.content.ContentProvider;
@@ -13,8 +17,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 
 import com.loveplusplus.zhengzhou.provider.BusContract.BusLine;
+import com.loveplusplus.zhengzhou.provider.BusContract.BusLineStation;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 import com.loveplusplus.zhengzhou.provider.BusDatabase.Tables;
 import com.loveplusplus.zhengzhou.util.SelectionBuilder;
@@ -26,35 +32,35 @@ public class BusProvider extends ContentProvider {
 
 	private static final int BUS_SEARCH_SUGGEST = 101;// 搜索建议
 
-	private static final int BUS_LIST = 102;// 公交列表
-	private static final int BUS_DETAIL = 103;// 公交详细信息
+	private static final int LINES = 102;// 公交列表
+	private static final int LINES_ID = 103;// 公交详细信息
 
-	private static final int FAVORITE_LIST = 201;
-	private static final int FAVORITE = 202;
+	private static final int FAVORITES = 201;
+	private static final int FAVORITES_id = 202;
 
-	private static final int LINE_STATIONS = 203;
-	private static final int LINE_STATION_ID = 204;
+	private static final int STATIONS = 203;
+	private static final int STATIONS_ID = 204;
+
+	private static final String TAG = makeLogTag(BusProvider.class);
 
 	private static UriMatcher buildUriMatcher() {
 		final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 		final String authority = BusContract.CONTENT_AUTHORITY;
 
-		matcher.addURI(authority, Tables.FAVORITE, FAVORITE_LIST);
-		matcher.addURI(authority, Tables.FAVORITE + "/*", FAVORITE);
+		matcher.addURI(authority, Tables.FAVORITE, FAVORITES);
+		matcher.addURI(authority, Tables.FAVORITE + "/*", FAVORITES_id);
 
-		matcher.addURI(authority,
-				"bus/" + SearchManager.SUGGEST_URI_PATH_QUERY,
+		matcher.addURI(authority, SearchManager.SUGGEST_URI_PATH_QUERY,
 				BUS_SEARCH_SUGGEST);
 
-		matcher.addURI(authority, "bus/" + SearchManager.SUGGEST_URI_PATH_QUERY
-				+ "/*", BUS_SEARCH_SUGGEST);
+		// matcher.addURI(authority,SearchManager.SUGGEST_URI_PATH_QUERY+ "/*",
+		// BUS_SEARCH_SUGGEST);
 
-		matcher.addURI(authority, Tables.BUS_LINE, BUS_LIST);
-		matcher.addURI(authority, Tables.BUS_LINE + "/*", BUS_DETAIL);
+		matcher.addURI(authority, Tables.BUS_LINE, LINES);
+		matcher.addURI(authority, Tables.BUS_LINE + "/*", LINES_ID);
 
-		matcher.addURI(authority, Tables.BUS_LINE_STATION, LINE_STATIONS);
-		matcher.addURI(authority, Tables.BUS_LINE_STATION + "/*",
-				LINE_STATION_ID);
+		matcher.addURI(authority, Tables.BUS_LINE_STATION, STATIONS);
+		matcher.addURI(authority, Tables.BUS_LINE_STATION + "/*", STATIONS_ID);
 
 		return matcher;
 	}
@@ -68,69 +74,59 @@ public class BusProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
+		LOGV(TAG, "query(uri=" + uri + ", proj=" + Arrays.toString(projection)
+				+ ")");
+		final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
 		final int match = sUriMatcher.match(uri);
+
 		switch (match) {
-		case BUS_SEARCH_SUGGEST:
-			return getBusSuggestions(selectionArgs[0]);
-		case FAVORITE_LIST:
-			return getFavoriteList();
-		case BUS_LIST:
-			return getBusList(selectionArgs[0]);
-		case BUS_DETAIL:
-			String lineName = uri.getLastPathSegment();
-			return getBusDetail(selectionArgs[0], lineName);
-		default:
-			throw new UnsupportedOperationException("Unknown uri: " + uri);
-
+		default: {
+			// Most cases are handled with simple SelectionBuilder
+			final SelectionBuilder builder = buildSimpleSelection(uri);
+			return builder.where(selection, selectionArgs).query(db,
+					projection, sortOrder);
 		}
-	}
+		case BUS_SEARCH_SUGGEST: {
+			final SelectionBuilder builder = new SelectionBuilder();
 
-	private Cursor getBusList(String query) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT _id,");
-		sb.append("line_name ,");
-		sb.append("'开往'||station_name AS  to_station");
-		sb.append(" FROM bus");
-		sb.append(" WHERE ");
-		sb.append(" is_up_down=0 AND ");
-		sb.append(" line_name LIKE ? OR ");
-		sb.append(" line_name LIKE ? OR ");
-		sb.append(" line_name LIKE ? ");
-		sb.append(" GROUP BY line_name ");
-		sb.append(" order by _id desc");
-		return queryBySQL(sb.toString(), new String[] { "B" + query + "%",
-				"Y" + query + "%", query + "%" });
-	}
+			selectionArgs[0] = selectionArgs[0] + "%";
 
-	/**
-	 * 获取站点信息
-	 * 
-	 * @param direct
-	 *            0上行 1下行
-	 * @param lineName
-	 *            线路名称
-	 * @return
-	 */
-	private Cursor getBusDetail(String direct, String lineName) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT _id,is_up_down,line_name,station_name,label_no ");
-		sb.append(" FROM bus");
-		sb.append(" WHERE ");
-		sb.append(" is_up_down=? AND ");
-		sb.append(" line_name=? order by label_no");
-		return queryBySQL(sb.toString(), new String[] { direct, lineName });
-	}
+			// sb.append("line_name AS suggest_intent_data_id,");
+			// sb.append("line_name AS  suggest_text_1,");
+			// sb.append("'开往'||station_name AS  suggest_text_2");
 
-	private Cursor getFavoriteList() {
-		final SelectionBuilder builder = new SelectionBuilder();
-		SelectionBuilder sb = builder.table(Tables.FAVORITE)
-				.mapToTable(Favorite._ID, Tables.FAVORITE)
-				.mapToTable(Favorite.BUS_NAME, Tables.FAVORITE)
-				.mapToTable(Favorite.DIRECT, Tables.FAVORITE)
-				.mapToTable(Favorite.SNO, Tables.FAVORITE)
-				.mapToTable(Favorite.STATION_NAME, Tables.FAVORITE);
-		return sb.query(mOpenHelper.getReadableDatabase(), null, null, null,
-				null, null);
+			builder.table(Tables.BUS_LINE);
+			builder.where(selection, selectionArgs);
+			builder.map(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,
+					BusLine.LINE_NAME);
+			builder.map(SearchManager.SUGGEST_COLUMN_TEXT_1, BusLine.LINE_NAME);
+			builder.map(SearchManager.SUGGEST_COLUMN_TEXT_2,
+					"'从'||start_station||'开往'||end_station");
+
+			projection = new String[] { BaseColumns._ID,
+					SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,
+					SearchManager.SUGGEST_COLUMN_TEXT_1,
+					SearchManager.SUGGEST_COLUMN_TEXT_2 };
+
+			final String limit = uri
+					.getQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT);
+			return builder.query(db, projection, null, null, null, limit);
+		}
+		case LINES: {
+			final SelectionBuilder builder = new SelectionBuilder();
+			builder.table(Tables.BUS_LINE);
+			builder.where(selection, selectionArgs);
+			
+			builder.map("to_station","'从'||start_station||'开往'||end_station");
+			
+			projection = new String[] { BaseColumns._ID,
+					BusLine.LINE_NAME,
+					"to_station" };
+			
+			return builder.query(db, projection, null);
+		}
+		}
 	}
 
 	/**
@@ -175,14 +171,19 @@ public class BusProvider extends ContentProvider {
 	@Override
 	public String getType(Uri uri) {
 		switch (sUriMatcher.match(uri)) {
-		case FAVORITE:
-			return Favorite.CONTENT_ITEM_TYPE;
-		case FAVORITE_LIST:
+
+		case FAVORITES:
 			return Favorite.CONTENT_TYPE;
-		case BUS_LIST:
+		case FAVORITES_id:
+			return Favorite.CONTENT_ITEM_TYPE;
+		case LINES:
 			return BusLine.CONTENT_TYPE;
-		case BUS_DETAIL:
+		case LINES_ID:
 			return BusLine.CONTENT_ITEM_TYPE;
+		case STATIONS:
+			return BusLineStation.CONTENT_TYPE;
+		case STATIONS_ID:
+			return BusLineStation.CONTENT_ITEM_TYPE;
 		default:
 			throw new IllegalArgumentException("Unknown URL " + uri);
 		}
@@ -193,7 +194,7 @@ public class BusProvider extends ContentProvider {
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 		final int match = sUriMatcher.match(uri);
 		switch (match) {
-		case FAVORITE_LIST:
+		case FAVORITES:
 			db.insertOrThrow(Tables.FAVORITE, null, values);
 			getContext().getContentResolver().notifyChange(uri, null);
 			return Favorite.buildUri(values.getAsString(BaseColumns._ID));
@@ -204,26 +205,64 @@ public class BusProvider extends ContentProvider {
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-		final int match = sUriMatcher.match(uri);
-		switch (match) {
-		case FAVORITE:
-			int count = db.delete(Tables.FAVORITE, selection, selectionArgs);
-			getContext().getContentResolver().notifyChange(uri, null);
-			return count;
-		default:
-			throw new UnsupportedOperationException();
-		}
+		LOGV(TAG, "delete(uri=" + uri + ")");
+
+		final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		final SelectionBuilder builder = buildSimpleSelection(uri);
+		int retVal = builder.where(selection, selectionArgs).delete(db);
+		getContext().getContentResolver().notifyChange(uri, null, false);
+		return retVal;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
-		throw new UnsupportedOperationException();
+		LOGV(TAG, "update(uri=" + uri + ", values=" + values.toString() + ")");
+		final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+		final SelectionBuilder builder = buildSimpleSelection(uri);
+		int retVal = builder.where(selection, selectionArgs).update(db, values);
+		getContext().getContentResolver().notifyChange(uri, null, false);
+		return retVal;
+	}
+
+	private SelectionBuilder buildSimpleSelection(Uri uri) {
+		final SelectionBuilder builder = new SelectionBuilder();
+		final int match = sUriMatcher.match(uri);
+		switch (match) {
+
+		case LINES_ID: {
+			final String id = BusLine.getId(uri);
+			return builder.table(Tables.BUS_LINE).where(
+					BusLine.LINE_NAME + "=?", id);
+		}
+		case FAVORITES: {
+			return builder.table(Tables.FAVORITE);
+		}
+		case FAVORITES_id: {
+			final String id = Favorite.getId(uri);
+			return builder.table(Tables.FAVORITE)
+					.where(Favorite._ID + "=?", id);
+		}
+		case STATIONS: {
+			return builder.table(Tables.BUS_LINE_STATION);
+		}
+		case STATIONS_ID: {
+			final String id = BusLineStation.getId(uri);
+			return builder.table(Tables.BUS_LINE_STATION).where(
+					BusLineStation.LINE_NAME + "=?", id);
+		}
+
+		default: {
+			throw new UnsupportedOperationException("Unknown uri for " + match
+					+ ": " + uri);
+		}
+		}
 	}
 
 	@Override
-	public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+	public ContentProviderResult[] applyBatch(
+			ArrayList<ContentProviderOperation> operations)
 			throws OperationApplicationException {
 		final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		db.beginTransaction();
@@ -239,4 +278,5 @@ public class BusProvider extends ContentProvider {
 			db.endTransaction();
 		}
 	}
+
 }

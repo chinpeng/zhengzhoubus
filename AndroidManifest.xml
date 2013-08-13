@@ -41,23 +41,42 @@
         <activity
             android:name=".ui.AboutActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/about" />
+            android:label="@string/about"
+            android:parentActivityName=".ui.HomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
         <activity
             android:name=".ui.GpsWaitingActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".ui.HomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
         <activity
             android:name=".ui.NotifyDetailActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".ui.HomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
         <activity
             android:name=".ui.StationsActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
-        
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".ui.HomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
         <activity
             android:name=".ui.SearchActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:launchMode="singleTop"
-            android:parentActivityName=".ui.HomeActivity">
+            android:parentActivityName=".ui.HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -65,7 +84,8 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-             <meta-data android:name="android.support.PARENT_ACTIVITY"
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.HomeActivity" />
         </activity>
 
@@ -74,27 +94,25 @@
             android:authorities="com.loveplusplus.zhengzhou.provider.BusProvider"
             android:exported="false" />
 
-        <service android:name=".io.TaskService" />
-
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".ui.SearchActivity" />
-        
-        
-         <!--
+
+        <!--
           BroadcastReceiver that will receive the C2DM messages from GCM
           services and handle them to the custom IntentService.
-
           The com.google.android.c2dm.permission.SEND permission is necessary
-          so only GCM services can send data messages for the app.
-        -->
-        <receiver android:name=".gcm.GCMRedirectedBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
+          so only GCM services can send data messages for the app.        -->
+        <receiver
+            android:name=".gcm.GCMRedirectedBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
+
                 <!-- Receives the actual messages. -->
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <!-- Receives the registration id. -->
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
                 <category android:name="com.loveplusplus.zhengzhoubus" />
             </intent-filter>
         </receiver>
@@ -102,10 +120,8 @@
         <!--
           Application-specific subclass of GCMBaseIntentService that will
           handle received messages.
-
           By default, it must be named .GCMIntentService, unless the
-          application uses a custom BroadcastReceiver that redefines its name.
-        -->
+          application uses a custom BroadcastReceiver that redefines its name.        -->
         <service android:name=".gcm.GCMIntentService" />
     </application>
 

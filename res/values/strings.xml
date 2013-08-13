@@ -10,7 +10,7 @@
     <string name="menu_about">关于</string>
     <string name="menu_score">好评</string>
     <string name="menu_delete">删除</string>
-    <string name="menu_refresh">删除</string>
+    <string name="menu_refresh">刷新</string>
     
     <string name="share_content">郑州公交查询，可以查询200余条公交线路的实时运行信息，下载地址：http://play.google.com/store/apps/details?id=</string>
     <string name="app_version">版本: </string>

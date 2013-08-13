@@ -47,6 +47,10 @@ public class BusContract {
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.bus_line";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.bus_line";
 
+		public static String getId(Uri uri) {
+			 return uri.getPathSegments().get(1);
+		}
+		
 		public static Uri buildUri(String id) {
 			return CONTENT_URI.buildUpon().appendPath(id).build();
 		}
@@ -58,6 +62,9 @@ public class BusContract {
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.bus_line_station";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.bus_station";
 		
+		public static String getId(Uri uri) {
+			 return uri.getPathSegments().get(1);
+		}
 		public static Uri buildUri(String id) {
 			return CONTENT_URI.buildUpon().appendPath(id).build();
 		}
@@ -73,6 +80,10 @@ public class BusContract {
 
 		public static Uri buildUri(String id) {
 			return CONTENT_URI.buildUpon().appendPath(id).build();
+		}
+
+		public static String getId(Uri uri) {
+			 return uri.getPathSegments().get(1);
 		}
 	}
 

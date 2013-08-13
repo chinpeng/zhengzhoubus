@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.provider.BusContract.BusLine;
+import com.loveplusplus.zhengzhou.provider.BusContract.BusLineStation;
 import com.loveplusplus.zhengzhou.util.ReflectionUtils;
 import com.loveplusplus.zhengzhou.util.UIUtils;
 
@@ -56,9 +57,9 @@ public class SearchActivity extends BaseActivity implements
 				String lineName = cursor.getString(cursor
 						.getColumnIndex(BusLine.LINE_NAME));
 
-				Intent wordIntent = new Intent(getApplicationContext(),
+				Intent wordIntent = new Intent(SearchActivity.this,
 						StationsActivity.class);
-				Uri data = Uri.withAppendedPath(BusLine.CONTENT_URI, lineName);
+				Uri data = Uri.withAppendedPath(BusLineStation.CONTENT_URI, lineName);
 				wordIntent.setData(data);
 				startActivity(wordIntent);
 			}
