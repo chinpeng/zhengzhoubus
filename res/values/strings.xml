@@ -30,7 +30,7 @@
     <string name="server_register_error">Could not register device on Demo Server after %1$d attempts.</string>
     <string name="server_unregister_error">Could not unregister device on Demo Server (%1$s).</string>
     
-    <string name="no_favorite_data">暂无收藏的公交数据</string>
+    <string name="no_favorite_data">目前共提供郑州市254条公交线路的GPS实时查询功能，点击搜索图标开始查询</string>
     
     <string name="gps_info_3">第三班</string>
     
@@ -45,5 +45,8 @@
     <string name="wait_station">候车站点：</string>
     
     <string name="bus_name">97路</string>
+    
+    <string name="no_gps_info">没有车辆信息</string>
+    <string name="activity_gps_info">GPS候车车辆信息</string>
 
 </resources>

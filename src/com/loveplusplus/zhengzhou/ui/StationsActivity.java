@@ -1,6 +1,8 @@
 package com.loveplusplus.zhengzhou.ui;
 
 import static com.loveplusplus.zhengzhou.util.LogUtils.LOGD;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +15,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.fragment.DownStationListFragment;
 import com.loveplusplus.zhengzhou.fragment.UpListFragment;
+import com.loveplusplus.zhengzhou.provider.BusContract.BusLine;
 
 public class StationsActivity extends BaseActivity implements ActionBar.TabListener,
 		ViewPager.OnPageChangeListener {
@@ -24,11 +27,6 @@ public class StationsActivity extends BaseActivity implements ActionBar.TabListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_stations);
-		// ActionBar actionBar = getSupportActionBar();
-		// actionBar.setDisplayShowTitleEnabled(false);
-		// actionBar.setDisplayShowHomeEnabled(false);
-
-		//FragmentManager fm = getSupportFragmentManager();
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(new StationPageAdapter(
 				getSupportFragmentManager()));
@@ -41,11 +39,25 @@ public class StationsActivity extends BaseActivity implements ActionBar.TabListe
 		 actionBar.setDisplayShowHomeEnabled(true);
 		 actionBar.setDisplayHomeAsUpEnabled(true);
          actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
+         String lineName =getIntent().getData().getPathSegments().get(1);
+         actionBar.setTitle(lineName+"公交车信息");
+         Uri uri = BusLine.buildUri(lineName);
+         
+         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+         String start="上行";
+         String end="下行";
+         if(cursor.moveToFirst()){
+        	 start+="(开往"+cursor.getString(cursor.getColumnIndex(BusLine.END_STATION))+"方向)";
+        	 end+="(开往"+cursor.getString(cursor.getColumnIndex(BusLine.START_STATION))+"方向)";
+        	 cursor.close();
+         }
+         
          actionBar.addTab(actionBar.newTab()
-                 .setText("上行")
+                 .setText(start)
                  .setTabListener(this));
          actionBar.addTab(actionBar.newTab()
-                 .setText("下行")
+                 .setText(end)
                  .setTabListener(this));
          
         // setHasTabs();
@@ -96,22 +108,21 @@ public class StationsActivity extends BaseActivity implements ActionBar.TabListe
 	@Override
 	public void onPageSelected(int position) {
 		getSupportActionBar().setSelectedNavigationItem(position);
-		String title = "";
-		// int titleId = -1;
-		switch (position) {
-		case 0:
-			// titleId = R.string.title_my_schedule;
-			title = "上行";
-			break;
-		case 1:
-			title = "下行";
-			// titleId = R.string.title_explore;
-			break;
-		}
-
-		// String title = getString(titleId);
-		EasyTracker.getTracker().sendView(title);
-		LOGD("Tracker", title);
+//		String title = "";
+//		// int titleId = -1;
+//		switch (position) {
+//		case 0:
+//			// titleId = R.string.title_my_schedule;
+//			title = "上行";
+//			break;
+//		case 1:
+//			title = "下行";
+//			// titleId = R.string.title_explore;
+//			break;
+//		}
+// 	String title = getString(titleId);
+//	EasyTracker.getTracker().sendView(title);
+//	LOGD("Tracker", title);
 
 	}
 

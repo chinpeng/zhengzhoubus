@@ -16,17 +16,16 @@ import com.loveplusplus.zhengzhou.util.BusUtil;
 
 public class GpsWaitingActivity extends BaseActivity {
 
-	private TextView lineName;
+	//private TextView lineName;
 	private TextView lineDirect;
 	private TextView lineWaitStation;
 	private TextView lineWaitInfo1;
 	private TextView lineWaitInfo2;
 	private TextView lineWaitInfo3;
 
-	private String lineName2;
+	private String lineName;
 	private String ud;
 	private String sno;
-	private String hczd;
 
 	private MyAsyncTask task=null;
 	@Override
@@ -38,17 +37,19 @@ public class GpsWaitingActivity extends BaseActivity {
 		actionBar.setDisplayShowHomeEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		lineName = (TextView) findViewById(R.id.line_name);
+		lineName = getIntent().getStringExtra("lineName");
+		ud = getIntent().getStringExtra("ud");
+		sno = getIntent().getStringExtra("sno");
+		
+		((TextView) findViewById(R.id.line_name)).setText(lineName+"公交车");
+		
 		lineDirect = (TextView) findViewById(R.id.line_direct);
 		lineWaitStation = (TextView) findViewById(R.id.line_wait_station);
 		lineWaitInfo1 = (TextView) findViewById(R.id.line_wait_info_1);
 		lineWaitInfo2 = (TextView) findViewById(R.id.line_wait_info_2);
 		lineWaitInfo3 = (TextView) findViewById(R.id.line_wait_info_3);
 
-		lineName2 = getIntent().getStringExtra("lineName");
-		ud = getIntent().getStringExtra("ud");
-		sno = getIntent().getStringExtra("sno");
-		hczd = getIntent().getStringExtra("hczd");
+		
 
 		refresh();
 
@@ -95,11 +96,7 @@ public class GpsWaitingActivity extends BaseActivity {
 
 		@Override
 		protected String[] doInBackground(Void... params) {
-
-			// 调用http
-			// String back = ServerUtilities.getGps(lineName,ud,sno,hczd);
-			String[] back = BusUtil.getGps(lineName2, ud, sno);
-
+			String[] back = BusUtil.getGps(lineName, ud, sno);
 			return back;
 		}
 
@@ -111,7 +108,6 @@ public class GpsWaitingActivity extends BaseActivity {
 				progressDialog.dismiss();
 			}
 			if (result != null && result.length == 6) {
-				lineName.setText(result[0] + "公交车");
 				lineDirect.setText("开往" + result[1] + "方向");
 				lineWaitStation.setText("候车于" + result[2]);
 				lineWaitInfo1.setText(result[3]);

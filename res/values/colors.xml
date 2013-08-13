@@ -4,9 +4,12 @@
     <color name="white">#ffffffff</color>
     <color name="black">#ff000000</color>
     <color name="dimgray">#ff696969</color>
-    
     <color name="actionBarColor">#33b5e5</color>
     <color name="splitActionbarColor">#33b5e5</color>
-    
+    <color name="transparent">#00000000</color>
+    <color name="host_background">#ffe5e5e5</color>
+    <color name="gps_title">#00CC99</color>
+    <color name="gps_content">#ff000000</color>
+    <color name="actionbar_text">#ff000000</color>
 
 </resources>

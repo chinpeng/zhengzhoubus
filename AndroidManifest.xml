@@ -50,6 +50,7 @@
         <activity
             android:name=".ui.GpsWaitingActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/activity_gps_info"
             android:parentActivityName=".ui.HomeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

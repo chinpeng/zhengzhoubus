@@ -3,9 +3,39 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <item name="android:actionBarTabTextStyle">@style/TabTextStyle</item>
+        <item name="android:actionMenuTextColor">@color/actionbar_text</item>
+
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="actionBarTabTextStyle">@style/TabTextStyle</item>
+        <item name="actionMenuTextColor">@color/actionbar_text</item>
     </style>
 
+    <!-- general styles for the action bar -->
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:titleTextStyle">@style/TitleTextStyle</item>
+        <item name="android:background">@drawable/ab_solid_custom_blue_inverse_holo</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_inverse_holo</item>
+        <item name="android:backgroundSplit">@drawable/ab_solid_custom_blue_inverse_holo</item>
 
+        <!-- Support library compatibility -->
+        <item name="titleTextStyle">@style/TitleTextStyle</item>
+        <item name="background">@drawable/ab_solid_custom_blue_inverse_holo</item>
+        <item name="backgroundStacked">@drawable/ab_stacked_solid_inverse_holo</item>
+        <item name="backgroundSplit">@drawable/ab_solid_custom_blue_inverse_holo</item>
+    </style>
+
+    <!-- action bar title text -->
+    <style name="TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!-- action bar tab text -->
+    <style name="TabTextStyle" parent="@style/Widget.AppCompat.ActionBar.TabText">
+        <item name="android:textColor">@color/white</item>
+    </style>
 
     <style name="textNoDataStyle">
         <item name="android:background">@drawable/card</item>
@@ -15,6 +45,20 @@
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginLeft">10dp</item>
         <item name="android:layout_marginRight">10dp</item>
+    </style>
+
+    <style name="gpsTextTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/gps_title</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="gpsTextContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/gps_content</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
 </resources>

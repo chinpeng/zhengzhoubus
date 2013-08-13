@@ -54,14 +54,18 @@ public class SearchActivity extends BaseActivity implements
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Cursor cursor = (Cursor) adapter.getItem(position);
-				String lineName = cursor.getString(cursor
-						.getColumnIndex(BusLine.LINE_NAME));
-
-				Intent wordIntent = new Intent(SearchActivity.this,
+				String lineName = cursor.getString(cursor.getColumnIndex(BusLine.LINE_NAME));
+				//String startStation = cursor.getString(cursor.getColumnIndex(BusLine.START_STATION));
+				//String endStation = cursor.getString(cursor.getColumnIndex(BusLine.END_STATION));
+			
+				Intent intent = new Intent(SearchActivity.this,
 						StationsActivity.class);
 				Uri data = Uri.withAppendedPath(BusLineStation.CONTENT_URI, lineName);
-				wordIntent.setData(data);
-				startActivity(wordIntent);
+				intent.setData(data);
+				intent.putExtra(BusLine.LINE_NAME, lineName);
+				//intent.putExtra(BusLine.START_STATION, startStation);
+				//intent.putExtra(BusLine.END_STATION, endStation);
+				startActivity(intent);
 			}
 		});
 
