@@ -12,9 +12,9 @@ import com.loveplusplus.zhengzhou.R;
 import com.loveplusplus.zhengzhou.gcm.GCMCommand;
 import com.loveplusplus.zhengzhou.ui.HomeActivity;
 
-public class TestCommand extends GCMCommand {
+public class StationCommand extends GCMCommand {
 
-	private static final String TAG = makeLogTag(TestCommand.class);
+	private static final String TAG = makeLogTag(StationCommand.class);
 
 	@Override
 	public void execute(Context context, String type, String extrasData) {

@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.loveplusplus.zhengzhou.R;
-import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
+import com.loveplusplus.zhengzhou.provider.BusContract.BusLineStation;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 import com.loveplusplus.zhengzhou.ui.GpsWaitingActivity;
 
@@ -23,21 +23,17 @@ public class StationListFragment extends ListFragment implements
 
 	SimpleCursorAdapter mAdapter;
 
-//	public StationListFragment() {
-//
-//	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 
 		Cursor cursor = (Cursor) mAdapter.getItem(position);
 
-		String waitStation = cursor.getString(cursor
-				.getColumnIndex(Bus.STATION_NAME));
-		String direct = cursor.getString(cursor.getColumnIndex(Bus.IS_UP_DOWN));
-		String sno = cursor.getString(cursor.getColumnIndex(Bus.LABEL_NO));
+		String waitStation = cursor.getString(cursor.getColumnIndex(BusLineStation.STATION_NAME));
+		String direct = cursor.getString(cursor.getColumnIndex(BusLineStation.DIRECT));
+		String sno = cursor.getString(cursor.getColumnIndex(BusLineStation.SNO));
 		String lineName = cursor
-				.getString(cursor.getColumnIndex(Bus.LINE_NAME));
+				.getString(cursor.getColumnIndex(BusLineStation.LINE_NAME));
 
 		// 保存到数据库
 		ContentValues values = new ContentValues();
@@ -61,7 +57,7 @@ public class StationListFragment extends ListFragment implements
 
 		mAdapter = new SimpleCursorAdapter(activity,
 				R.layout.activity_stations_item, null, new String[] {
-						Bus.LABEL_NO, Bus.STATION_NAME }, new int[] { R.id.sno,
+				BusLineStation.SNO, BusLineStation.STATION_NAME }, new int[] { R.id.sno,
 						R.id.station_name }, 0);
 		setListAdapter(mAdapter);
 

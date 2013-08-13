@@ -10,7 +10,7 @@
         android:layout_height="90.0dip"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30.0dp"
-        android:background="@drawable/icon"
+        android:background="@drawable/ic_launcher"
         android:contentDescription="@string/app_name" />
 
     <TextView

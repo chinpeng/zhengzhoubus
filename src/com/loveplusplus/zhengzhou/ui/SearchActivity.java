@@ -11,17 +11,17 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.loveplusplus.zhengzhou.R;
-import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
+import com.loveplusplus.zhengzhou.provider.BusContract.BusLine;
 import com.loveplusplus.zhengzhou.util.ReflectionUtils;
 import com.loveplusplus.zhengzhou.util.UIUtils;
 
@@ -41,7 +41,7 @@ public class SearchActivity extends BaseActivity implements
 		mTextView = (TextView) findViewById(R.id.text);
 
 		adapter = new SimpleCursorAdapter(this, R.layout.bus_search_suggest,
-				null, new String[] { Bus.LINE_NAME, "to_station" }, new int[] {
+				null, new String[] { BusLine.LINE_NAME, "to_station" }, new int[] {
 						R.id.bus_name, R.id.bus_definition }, 0);
 
 		mListView = (ListView) findViewById(android.R.id.list);
@@ -54,11 +54,11 @@ public class SearchActivity extends BaseActivity implements
 					int position, long id) {
 				Cursor cursor = (Cursor) adapter.getItem(position);
 				String lineName = cursor.getString(cursor
-						.getColumnIndex(Bus.LINE_NAME));
+						.getColumnIndex(BusLine.LINE_NAME));
 
 				Intent wordIntent = new Intent(getApplicationContext(),
 						StationsActivity.class);
-				Uri data = Uri.withAppendedPath(Bus.CONTENT_URI, lineName);
+				Uri data = Uri.withAppendedPath(BusLine.CONTENT_URI, lineName);
 				wordIntent.setData(data);
 				startActivity(wordIntent);
 			}
@@ -158,7 +158,7 @@ public class SearchActivity extends BaseActivity implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		query = null == args ? "" : args.getString(SearchManager.QUERY);
 
-		return new CursorLoader(this, Bus.CONTENT_URI, null, Bus.LINE_NAME
+		return new CursorLoader(this, BusLine.CONTENT_URI, null, BusLine.LINE_NAME
 				+ " like ?", new String[] { query + "%" }, null);
 	}
 

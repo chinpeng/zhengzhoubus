@@ -56,8 +56,7 @@ public class HomeActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 
-		// actionBar.setDisplayHomeAsUpEnabled(false);
-		actionBar.setHomeButtonEnabled(false);
+		getSupportActionBar().setHomeButtonEnabled(false);
 
 		mAdapter = new SimpleCursorAdapter(this, R.layout.activity_home_item,
 				null,
@@ -207,7 +206,7 @@ public class HomeActivity extends BaseActivity implements
 	protected void deleteSelectedItem(long id) {
 
 		getContentResolver().delete(
-				Favorite.buildFavoriteUri(String.valueOf(id)),
+				Favorite.buildUri(String.valueOf(id)),
 				Favorite._ID + "=?", new String[] { String.valueOf(id) });
 
 	}

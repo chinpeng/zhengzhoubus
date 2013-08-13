@@ -1,25 +1,29 @@
 package com.loveplusplus.zhengzhou.provider;
 
+import com.loveplusplus.zhengzhou.provider.BusDatabase.Tables;
+
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class BusContract {
 
-	interface BusColumns {
-		String LABEL_NO = "label_no";
-		String IS_UP_DOWN = "is_up_down";
+	interface BusLineColumns {
 		String LINE_NAME = "line_name";
-		String STATION_NAME = "station_name";
-		String LONGITUDE = "longitude";
-		String LATITUDE = "latitude";
 		String CARFARE = "carfare";
 		String FIRST_TIME = "first_time";
 		String DEPT_NAME = "dept_name";
-		String YN_USE_IC_A="yn_use_ic_a";
-		String YN_USE_IC_B="yn_use_ic_b";
-		String YN_USE_IC_C="yn_use_ic_c";
-		String YN_USE_IC_D="yn_use_ic_d";
-		String ALIAS="alias";
+		String START_STATION="start_station";
+		String END_STATION="end_station";
+		
+	}
+	
+	interface BusLineStationColumns {
+		String DIRECT = "direct";
+		String SNO = "sno";
+		String STATION_NAME = "station_name";
+		String LINE_NAME = "line_name";
+		String GPS_LAT="gps_lat";
+		String GPS_LNG="gps_lng";
 		
 	}
 
@@ -35,31 +39,40 @@ public class BusContract {
 	public static final Uri BASE_CONTENT_URI = Uri.parse("content://"
 			+ CONTENT_AUTHORITY);
 
-	public static final String PATH_BUS = "bus_info";
-	public static final String PATH_FAVORITE = "favorite";
 
-	public static class Bus implements BusColumns, BaseColumns {
+	public static class BusLine implements BusLineColumns, BaseColumns {
 		public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-				.appendPath(PATH_BUS).build();
+				.appendPath(Tables.BUS_LINE).build();
 
-		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.bus";
-		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.bus";
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.bus_line";
+		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.bus_line";
 
-		public static Uri buildBusUri(String categoryId) {
-			return CONTENT_URI.buildUpon().appendPath(categoryId).build();
+		public static Uri buildUri(String id) {
+			return CONTENT_URI.buildUpon().appendPath(id).build();
+		}
+	}
+	public static class BusLineStation implements BusLineStationColumns, BaseColumns {
+		public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+				.appendPath(Tables.BUS_LINE_STATION).build();
+		
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.bus_line_station";
+		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.bus_station";
+		
+		public static Uri buildUri(String id) {
+			return CONTENT_URI.buildUpon().appendPath(id).build();
 		}
 	}
 
 	public static class Favorite implements FavoriteColumns, BaseColumns {
 
 		public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-				.appendPath(PATH_FAVORITE).build();
+				.appendPath(Tables.FAVORITE).build();
 
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.zzbus.favorite";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.zzbus.favorite";
 
-		public static Uri buildFavoriteUri(String tableId) {
-			return CONTENT_URI.buildUpon().appendPath(tableId).build();
+		public static Uri buildUri(String id) {
+			return CONTENT_URI.buildUpon().appendPath(id).build();
 		}
 	}
 

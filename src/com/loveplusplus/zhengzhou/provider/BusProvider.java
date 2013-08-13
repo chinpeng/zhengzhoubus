@@ -1,15 +1,20 @@
 package com.loveplusplus.zhengzhou.provider;
 
+import java.util.ArrayList;
+
 import android.app.SearchManager;
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.loveplusplus.zhengzhou.provider.BusContract.Bus;
+import com.loveplusplus.zhengzhou.provider.BusContract.BusLine;
 import com.loveplusplus.zhengzhou.provider.BusContract.Favorite;
 import com.loveplusplus.zhengzhou.provider.BusDatabase.Tables;
 import com.loveplusplus.zhengzhou.util.SelectionBuilder;
@@ -27,12 +32,15 @@ public class BusProvider extends ContentProvider {
 	private static final int FAVORITE_LIST = 201;
 	private static final int FAVORITE = 202;
 
+	private static final int LINE_STATIONS = 203;
+	private static final int LINE_STATION_ID = 204;
+
 	private static UriMatcher buildUriMatcher() {
 		final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 		final String authority = BusContract.CONTENT_AUTHORITY;
 
-		matcher.addURI(authority, BusContract.PATH_FAVORITE, FAVORITE_LIST);
-		matcher.addURI(authority, BusContract.PATH_FAVORITE + "/*", FAVORITE);
+		matcher.addURI(authority, Tables.FAVORITE, FAVORITE_LIST);
+		matcher.addURI(authority, Tables.FAVORITE + "/*", FAVORITE);
 
 		matcher.addURI(authority,
 				"bus/" + SearchManager.SUGGEST_URI_PATH_QUERY,
@@ -41,8 +49,13 @@ public class BusProvider extends ContentProvider {
 		matcher.addURI(authority, "bus/" + SearchManager.SUGGEST_URI_PATH_QUERY
 				+ "/*", BUS_SEARCH_SUGGEST);
 
-		matcher.addURI(authority, BusContract.PATH_BUS, BUS_LIST);
-		matcher.addURI(authority, BusContract.PATH_BUS + "/*", BUS_DETAIL);
+		matcher.addURI(authority, Tables.BUS_LINE, BUS_LIST);
+		matcher.addURI(authority, Tables.BUS_LINE + "/*", BUS_DETAIL);
+
+		matcher.addURI(authority, Tables.BUS_LINE_STATION, LINE_STATIONS);
+		matcher.addURI(authority, Tables.BUS_LINE_STATION + "/*",
+				LINE_STATION_ID);
+
 		return matcher;
 	}
 
@@ -167,9 +180,9 @@ public class BusProvider extends ContentProvider {
 		case FAVORITE_LIST:
 			return Favorite.CONTENT_TYPE;
 		case BUS_LIST:
-			return Bus.CONTENT_TYPE;
+			return BusLine.CONTENT_TYPE;
 		case BUS_DETAIL:
-			return Bus.CONTENT_ITEM_TYPE;
+			return BusLine.CONTENT_ITEM_TYPE;
 		default:
 			throw new IllegalArgumentException("Unknown URL " + uri);
 		}
@@ -183,8 +196,7 @@ public class BusProvider extends ContentProvider {
 		case FAVORITE_LIST:
 			db.insertOrThrow(Tables.FAVORITE, null, values);
 			getContext().getContentResolver().notifyChange(uri, null);
-			return Favorite.buildFavoriteUri(values
-					.getAsString(BaseColumns._ID));
+			return Favorite.buildUri(values.getAsString(BaseColumns._ID));
 		default:
 			throw new UnsupportedOperationException();
 		}
@@ -210,4 +222,21 @@ public class BusProvider extends ContentProvider {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+			throws OperationApplicationException {
+		final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		db.beginTransaction();
+		try {
+			final int numOperations = operations.size();
+			final ContentProviderResult[] results = new ContentProviderResult[numOperations];
+			for (int i = 0; i < numOperations; i++) {
+				results[i] = operations.get(i).apply(this, results, i);
+			}
+			db.setTransactionSuccessful();
+			return results;
+		} finally {
+			db.endTransaction();
+		}
+	}
 }
