@@ -11,13 +11,13 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.loveplusplus.zhengzhou.R;
@@ -103,6 +103,7 @@ public class SearchActivity extends BaseActivity implements
 		super.onCreateOptionsMenu(menu);
 		getMenuInflater().inflate(R.menu.search, menu);
 		final MenuItem searchItem = menu.findItem(R.id.menu_search);
+		
 		if (searchItem != null && UIUtils.hasHoneycomb()) {
 			SearchView searchView = (SearchView) searchItem
 					.getActionView();
