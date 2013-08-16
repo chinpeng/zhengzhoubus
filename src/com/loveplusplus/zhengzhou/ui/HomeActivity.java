@@ -79,7 +79,7 @@ public class HomeActivity extends BaseActivity implements
 				});
 		setupView();
 
-		registerGCMClient();
+		//registerGCMClient();
 	}
 
 	private void registerGCMClient() {
